@@ -77,6 +77,10 @@ namespace Organisms
         }
         public void propagate()
         {
+            for (int i = 0; i < neurons.Length; i++)
+            {
+                neurons[i].sum = 100;
+            }
             foreach (Connection c in connections)
             {
                 if (c.index < 0 || c.index >= neurons.Length)

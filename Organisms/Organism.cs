@@ -304,7 +304,7 @@ namespace Organisms
         }
         public Organism reproduce()
         {
-            Organism o = new Organism(squareTexture, 0,0,null);
+            Organism o = new Organism(squareTexture, 20,100,null);
             Neuron[] clonedNeurons = new Neuron[neurons.Length];
 
             // Clone each neuron in the parent organism and add it to the clonedNeurons array
