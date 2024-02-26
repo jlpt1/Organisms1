@@ -288,7 +288,7 @@ namespace Organisms
                     newNetworks.Add(nn.reproduce());
                 }
 
-                spriteBatch.Draw(texture, new Vector2(nn.x, nn.y), null, Color.AliceBlue, 0f, origin, 0.1525f, SpriteEffects.None, 0f);
+                spriteBatch.Draw(texture, new Vector2(nn.x, nn.y), null, nn.color, 0f, origin, 0.1525f, SpriteEffects.None, 0f);
             }
 
             // After the loop, add all new networks from the temporary list to the original list
@@ -327,6 +327,12 @@ namespace Organisms
 
 
             }
+            int temp = 0;
+            foreach (var n in neuralNetworks)
+            {
+                temp += n.totalFood;
+            }
+            spriteBatch.DrawString(bangersSmall, "Total food eaten: "+temp, new Vector2(0, 80), Color.Red);
             spriteBatch.End();
 
             base.Draw(gameTime);

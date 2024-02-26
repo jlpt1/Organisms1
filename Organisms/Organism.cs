@@ -28,6 +28,7 @@ namespace Organisms
         public float closestFoodY = 1000;
         public Color color;
         public int gen;
+        public int totalFood = 0;
 
         public Organism(Texture2D squareTexture)
         {
@@ -46,9 +47,10 @@ namespace Organisms
         public Organism(Texture2D squareTexture,int neuronCount, int connectionCount)
         {
             // TODO: Add your initialization logic here
-
+            
             neurons = new Neuron[neuronCount];
             Random r = new Random();
+            color = new Color(r.Next(0, 255), r.Next(0, 255), r.Next(0, 255));
             count = neuronCount;
             x = r.Next(100, 1800);
             y = r.Next(100, 900);
@@ -160,6 +162,7 @@ namespace Organisms
                 {
                     life = 1000;
                     foodEaten++;
+                    totalFood++;
                     foods.RemoveAt(i); // Remove the food item from the list
                                        // Optionally, break here if you only want to process one food item
                                        // break;
