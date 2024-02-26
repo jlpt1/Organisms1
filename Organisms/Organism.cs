@@ -15,6 +15,7 @@ namespace Organisms
         public Neuron[] neurons;
         public int life = 1000;
         public int foodEaten = 0;
+        public int totalFood = 0;
         private SpriteFont bangers;
         private SpriteFont bangersSmall;
         private Texture2D squareTexture;
@@ -28,7 +29,6 @@ namespace Organisms
         public float closestFoodY = 1000;
         public Color color;
         public int gen;
-        public int totalFood = 0;
 
         public Organism(Texture2D squareTexture)
         {
@@ -41,13 +41,14 @@ namespace Organisms
             this.connectionCount = connectionCount;
             this.squareTexture = squareTexture;
             scale = connectionCount / 10;
-          
+            color = new Color(r.Next(0, 255), r.Next(0, 255), r.Next(0, 255));
+
 
         }
         public Organism(Texture2D squareTexture,int neuronCount, int connectionCount)
         {
             // TODO: Add your initialization logic here
-            
+
             neurons = new Neuron[neuronCount];
             Random r = new Random();
             color = new Color(r.Next(0, 255), r.Next(0, 255), r.Next(0, 255));
