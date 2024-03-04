@@ -304,7 +304,7 @@ namespace Organisms
         }
         public Organism reproduce()
         {
-            Organism o = new Organism(squareTexture, 20,100,null);
+            Organism o = new Organism(squareTexture, neurons.Length,connectionCount,null);
             Neuron[] clonedNeurons = new Neuron[neurons.Length];
 
             // Clone each neuron in the parent organism and add it to the clonedNeurons array
@@ -319,17 +319,22 @@ namespace Organisms
             foreach (Neuron n in clonedNeurons)
                 {
                 conCount = conCount + n.connections.Count;
+                
                 }
             o.connectionCount = conCount;
             
             o.gen = gen + 1;
             o.x = x;
             o.y = y;
-            //o.mutate(connectionCount);
+            o.mutate(connectionCount);
             Random r = new Random();
             o.x += r.Next(-20, 20);
             o.y += r.Next(-20, 20);
             foodEaten = 0;
+            foreach (Neuron n in o.neurons)
+            {
+                n.neurons = clonedNeurons;
+            }
             return o;
         }
         public void Update(GameTime gameTime)

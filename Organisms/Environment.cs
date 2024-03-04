@@ -406,7 +406,10 @@ namespace Organisms
             {
                 avgneuroncount += n.count;
             }
-            avgneuroncount = avgneuroncount / neuralNetworks.Count;
+            if (neuralNetworks.Count != 0)
+            {
+                avgneuroncount = avgneuroncount / neuralNetworks.Count;
+            }
             int highestneuroncount = 0;
             foreach (var n in neuralNetworks)
             {

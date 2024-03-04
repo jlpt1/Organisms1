@@ -36,7 +36,7 @@ namespace Organisms
     public class Neuron
     {
         private Texture2D texture;
-        private Neuron[] neurons;
+        public Neuron[] neurons;
         private Organism organism;
         public Texture2D pixelTexture;
         public List<Connection> connections = new List<Connection>();
@@ -79,9 +79,9 @@ namespace Organisms
         {
             for (int i = 0; i < neurons.Length; i++)
             {
-                neurons[i].sum = 100;
+             //   neurons[i].sum = 100;
             }
-            foreach (Connection c in connections)
+            foreach (Connection c in connections) 
             {
                 if (c.index < 0 || c.index >= neurons.Length)
                 {
