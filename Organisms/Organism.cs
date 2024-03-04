@@ -13,7 +13,7 @@ namespace Organisms
     public class Organism
     {
         public Neuron[] neurons;
-        public int life = 1000;
+        public int life = 5000;
         public int foodEaten = 0;
         public int totalFood = 0;
         private SpriteFont bangers;
@@ -161,7 +161,7 @@ namespace Organisms
 
                 if (organismBounds.Intersects(foodBounds))
                 {
-                    life = 1000;
+                    life = 5000;
                     foodEaten++;
                     totalFood++;
                     foods.RemoveAt(i); // Remove the food item from the list
@@ -186,9 +186,9 @@ namespace Organisms
 
         private void AddNewNeuron()
 {
-    // Create a new Neuron with a random type (excluding ClosestFood for simplicity)
-    Type newNeuronType = (Type)r.Next(Enum.GetNames(typeof(Type)).Length - 1); // Exclude 'ClosestFood' type
-    Neuron newNeuron = new Neuron(squareTexture, this, neurons.Length, newNeuronType) { Position = new Vector2(((float)r.NextDouble() * 100) + 1780, ((float)r.NextDouble() * 400) + 500) }; ;
+            // Create a new Neuron with a random type (excluding ClosestFood for simplicity)
+            Type newNeuronType = Type.Normal;//(Type)r.Next(Enum.GetNames(typeof(Type)).Length); // Exclude 'ClosestFood' type
+    Neuron newNeuron = new Neuron(squareTexture, this, neurons.Length, newNeuronType) { Position = new Vector2(((float)r.NextDouble() * 100) + 1780, ((float)r.NextDouble() * 200) + 0) }; ;
 
             // Resize the neurons array to accommodate the new neuron
             Array.Resize(ref neurons, neurons.Length + 1);
@@ -304,7 +304,13 @@ namespace Organisms
         }
         public Organism reproduce()
         {
+            Random r = new Random();
             Organism o = new Organism(squareTexture, neurons.Length,connectionCount,null);
+
+            o.color = new Color(Math.Clamp(color.R + r.Next(-5, 5), 0, 255),
+    Math.Clamp(color.G + r.Next(-5, 5), 0, 255),
+    Math.Clamp(color.B + r.Next(-5, 5), 0, 255));
+            
             Neuron[] clonedNeurons = new Neuron[neurons.Length];
 
             // Clone each neuron in the parent organism and add it to the clonedNeurons array
@@ -327,7 +333,7 @@ namespace Organisms
             o.x = x;
             o.y = y;
             o.mutate(connectionCount);
-            Random r = new Random();
+            
             o.x += r.Next(-20, 20);
             o.y += r.Next(-20, 20);
             foodEaten = 0;

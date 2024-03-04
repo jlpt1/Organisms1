@@ -24,8 +24,8 @@ namespace Organisms
         InputPopup inputPopup;
         private KeyboardState currentKeyboardState;
         private KeyboardState previousKeyboardState;
-        public int foodChances = 0;
-        public int organismSpawnChance = 0;
+        public int foodChances = 350;
+        public int organismSpawnChance = 30;
         /// <summary>
         /// Constructs the game
         /// </summary>
@@ -50,7 +50,7 @@ namespace Organisms
             squareTexture.SetData(new Color[] { Color.White });
             for (int i = 0; i < 10; i++)
             {
-                Organism network = new Organism(squareTexture, 20, 100);
+                Organism network = new Organism(squareTexture, 60, 500);
                 network.gen = 0;
                 neuralNetworks.Add(network);
             }
@@ -130,14 +130,14 @@ namespace Organisms
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
             inputPopup.Update();
-            if (r.Next(0, 10000) < foodChances)
+            if (r.Next(0, 10000) < foodChances && food.Count < 500)
             {
                 Food f = new Food(texture, r.Next(40, 1600), r.Next(40, 800));
                 food.Add(f);
             }
             if (r.Next(0, 10000) < organismSpawnChance)
             {
-                Organism network = new Organism(squareTexture, 20, 100);
+                Organism network = new Organism(squareTexture, 60, 500);
                 network.gen = 0;
                 neuralNetworks.Add(network);
             }
@@ -397,32 +397,35 @@ namespace Organisms
 
             }
             int totalfoodeaten = 0;
+        
+            int avgneuroncount = 0;
+            int highestneuroncount = 0;
+            int highestconncount = 0;
             foreach (var n in neuralNetworks)
             {
                 totalfoodeaten += n.totalFood;
-            }
-            int avgneuroncount = 0;
-            foreach (var n in neuralNetworks)
-            {
                 avgneuroncount += n.count;
+                if (n.count >= highestneuroncount)
+                {
+                    highestneuroncount = n.count;
+                }
+                if (n.connectionCount >= highestconncount)
+                {
+                    highestconncount = n.connectionCount;
+                }
             }
             if (neuralNetworks.Count != 0)
             {
                 avgneuroncount = avgneuroncount / neuralNetworks.Count;
             }
-            int highestneuroncount = 0;
-            foreach (var n in neuralNetworks)
-            {
-                if (n.count >= highestneuroncount)
-                {
-                    highestneuroncount = n.count;
-                }
-            }
+         
+          
             spriteBatch.DrawString(bangersSmall, "Total food: " + food.Count, new Vector2(0, 60), Color.Red);
             spriteBatch.DrawString(bangersSmall, "Total food eaten: "+ totalfoodeaten, new Vector2(0, 80), Color.Red);
             spriteBatch.DrawString(bangersSmall, "Total organisms: " + neuralNetworks.Count, new Vector2(0, 100), Color.Red);
             spriteBatch.DrawString(bangersSmall, "Average neuron count: " + avgneuroncount, new Vector2(0, 120), Color.Red);
             spriteBatch.DrawString(bangersSmall, "highest neuron count: " + highestneuroncount, new Vector2(0, 140), Color.Red);
+            spriteBatch.DrawString(bangersSmall, "highest connection count: " + highestconncount, new Vector2(0, 160), Color.Red);
             inputPopup.Draw(spriteBatch);
             spriteBatch.End();
 
