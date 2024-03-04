@@ -21,6 +21,11 @@ namespace Organisms
         private Texture2D texture;
         Random r = new Random();
         Organism activeNetwork;
+        InputPopup inputPopup;
+        private KeyboardState currentKeyboardState;
+        private KeyboardState previousKeyboardState;
+        public int foodChances = 0;
+        public int organismSpawnChance = 0;
         /// <summary>
         /// Constructs the game
         /// </summary>
@@ -111,6 +116,8 @@ namespace Organisms
 
             bangers = Content.Load<SpriteFont>("bangers");
             bangersSmall = Content.Load<SpriteFont>("bangers2");
+            inputPopup = new InputPopup(bangers,this);
+            
         }
 
         /// <summary>
@@ -119,15 +126,16 @@ namespace Organisms
         /// <param name="gameTime">the measured game time</param>
         protected override void Update(GameTime gameTime)
         {
+
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-
-            if (r.Next(0, 30) == 5)
+            inputPopup.Update();
+            if (r.Next(0, 10000) < foodChances)
             {
                 Food f = new Food(texture, r.Next(40, 1600), r.Next(40, 800));
                 food.Add(f);
             }
-            if (r.Next(0, 10000) < 30)
+            if (r.Next(0, 10000) < organismSpawnChance)
             {
                 Organism network = new Organism(squareTexture, 20, 100);
                 network.gen = 0;
@@ -148,13 +156,13 @@ namespace Organisms
                 {
                     nn.y = 900;
                 }
-                if (nn.y < 10 )
+                if (nn.y < 10)
                 {
                     nn.y = 10;
                 }
 
             }
-            
+
             for (int i = neuralNetworks.Count - 1; i >= 0; i--)
             {
                 var nn = neuralNetworks[i];
@@ -173,14 +181,14 @@ namespace Organisms
                 // Check each neuron to see if it was clicked
                 foreach (var nn in neuralNetworks)
                 {
-                    
+
                     float distance = Vector2.Distance(clickPosition, new Vector2(nn.x, nn.y));
                     if (distance < 20)
                     {
                         foreach (var neuron in nn.neurons) neuron.LoadContent(Content);
                         // Change the neuron's activation
                         activeNetwork = nn;
-                        
+
                         break;
                         // Exit the loop if the clicked neuron is found
                     }
@@ -198,6 +206,67 @@ namespace Organisms
                 {
                     n.sum = r.Next(0, 10);
                 }
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.OemQuestion) && !inputPopup.isActive)
+            {
+                inputPopup.Activate();
+
+
+            }
+            previousKeyboardState = currentKeyboardState;
+            currentKeyboardState = Keyboard.GetState();
+          
+            if (inputPopup.isActive)
+            {
+                foreach (var key in currentKeyboardState.GetPressedKeys())
+                {
+                    if (previousKeyboardState.IsKeyUp(key))
+                    {
+                        // Append character to inputPopup.inputText
+                        if (key >= Keys.D0 && key <= Keys.D9)
+                        {
+                            // This will convert the key code to its corresponding character.
+                            // For example, Keys.D0 to '0', Keys.D1 to '1', and so forth.
+                            char number = (char)('0' + (key - Keys.D0));
+                            inputPopup.inputText += number;
+                        }
+                        if (key == Keys.OemQuestion)
+                        {
+                            inputPopup.inputText += '/';
+                        }
+                        if (key == Keys.Space)
+                        {
+                            inputPopup.inputText += ' ';
+                        }
+                        // Handle numpad keys (NumPad0-NumPad9)
+                        if (key >= Keys.NumPad0 && key <= Keys.NumPad9)
+                        {
+                            // This will convert the key code to its corresponding character for numpad.
+                            char number = (char)('0' + (key - Keys.NumPad0));
+                            inputPopup.inputText += number;
+                        }
+                        if (key >= Keys.A && key <= Keys.Z)
+                        {
+                            // This simply converts the key to its string representation.
+                            // Consider handling cases like lowercase letters or special characters as needed.
+                            inputPopup.inputText += key.ToString();
+                        }
+
+                        // Handle backspace
+                        if (key == Keys.Back && inputPopup.inputText.Length > 0)
+                        {
+                            inputPopup.inputText = inputPopup.inputText.Remove(inputPopup.inputText.Length - 1);
+                        }
+
+                        // Additional key handling (e.g., Enter to submit) can be added here
+                    }
+                }
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.T) && !inputPopup.isActive)
+            {
+                inputPopup.Activate();
+
+
             }
             // Check if the left mouse button was just pressed
             /*if (currentMouseState.LeftButton == ButtonState.Pressed && previousMouseState.LeftButton == ButtonState.Released)
@@ -327,12 +396,31 @@ namespace Organisms
 
 
             }
-            int temp = 0;
+            int totalfoodeaten = 0;
             foreach (var n in neuralNetworks)
             {
-                temp += n.totalFood;
+                totalfoodeaten += n.totalFood;
             }
-            spriteBatch.DrawString(bangersSmall, "Total food eaten: "+temp, new Vector2(0, 80), Color.Red);
+            int avgneuroncount = 0;
+            foreach (var n in neuralNetworks)
+            {
+                avgneuroncount += n.count;
+            }
+            avgneuroncount = avgneuroncount / neuralNetworks.Count;
+            int highestneuroncount = 0;
+            foreach (var n in neuralNetworks)
+            {
+                if (n.count >= highestneuroncount)
+                {
+                    highestneuroncount = n.count;
+                }
+            }
+            spriteBatch.DrawString(bangersSmall, "Total food: " + food.Count, new Vector2(0, 60), Color.Red);
+            spriteBatch.DrawString(bangersSmall, "Total food eaten: "+ totalfoodeaten, new Vector2(0, 80), Color.Red);
+            spriteBatch.DrawString(bangersSmall, "Total organisms: " + neuralNetworks.Count, new Vector2(0, 100), Color.Red);
+            spriteBatch.DrawString(bangersSmall, "Average neuron count: " + avgneuroncount, new Vector2(0, 120), Color.Red);
+            spriteBatch.DrawString(bangersSmall, "highest neuron count: " + highestneuroncount, new Vector2(0, 140), Color.Red);
+            inputPopup.Draw(spriteBatch);
             spriteBatch.End();
 
             base.Draw(gameTime);

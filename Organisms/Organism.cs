@@ -22,7 +22,7 @@ namespace Organisms
         Random r = new Random();
         public float x;
         public float y;
-        private int count;
+        public int count;
         private int scale;
         public int connectionCount;
         public float closestFoodX = 1000;
