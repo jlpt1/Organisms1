@@ -332,7 +332,7 @@ namespace Organisms
             o.gen = gen + 1;
             o.x = x;
             o.y = y;
-            o.mutate(connectionCount);
+            o.mutate(connectionCount/10);
             
             o.x += r.Next(-20, 20);
             o.y += r.Next(-20, 20);

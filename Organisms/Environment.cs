@@ -397,7 +397,7 @@ namespace Organisms
 
             }
             int totalfoodeaten = 0;
-        
+            int highestgen = 0;
             int avgneuroncount = 0;
             int highestneuroncount = 0;
             int highestconncount = 0;
@@ -413,6 +413,10 @@ namespace Organisms
                 {
                     highestconncount = n.connectionCount;
                 }
+                if (n.gen >= highestgen)
+                {
+                    highestgen = n.gen;
+                }
             }
             if (neuralNetworks.Count != 0)
             {
@@ -426,6 +430,7 @@ namespace Organisms
             spriteBatch.DrawString(bangersSmall, "Average neuron count: " + avgneuroncount, new Vector2(0, 120), Color.Red);
             spriteBatch.DrawString(bangersSmall, "highest neuron count: " + highestneuroncount, new Vector2(0, 140), Color.Red);
             spriteBatch.DrawString(bangersSmall, "highest connection count: " + highestconncount, new Vector2(0, 160), Color.Red);
+            spriteBatch.DrawString(bangersSmall, "highest generation: " + highestgen, new Vector2(0, 180), Color.Red);
             inputPopup.Draw(spriteBatch);
             spriteBatch.End();
 
