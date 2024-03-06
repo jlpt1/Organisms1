@@ -341,9 +341,9 @@ namespace Organisms
             Organism o = new Organism(squareTexture, neurons.Length,connectionCount,null);
             o.life = maxlife;
             o.maxlife = maxlife;
-            o.color = new Color(Math.Clamp(color.R + r.Next(-5, 5), 0, 255),
-    Math.Clamp(color.G + r.Next(-5, 5), 0, 255),
-    Math.Clamp(color.B + r.Next(-5, 5), 0, 255));
+            o.color = new Color(Math.Clamp(color.R + r.Next(-5, 6), 0, 255),
+    Math.Clamp(color.G + r.Next(-5, 6), 0, 255),
+    Math.Clamp(color.B + r.Next(-5, 6), 0, 255));
             
             Neuron[] clonedNeurons = new Neuron[neurons.Length];
 

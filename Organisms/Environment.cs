@@ -27,8 +27,8 @@ namespace Organisms
         private KeyboardState previousKeyboardState;
         public int foodChances = 250;
         public int organismSpawnChance = 30;
-        public int startNeurons = 150;
-        public int startConnections = 3000;
+        public int startNeurons = 20;
+        public int startConnections = 200;
         
         /// <summary>
         /// Constructs the game
