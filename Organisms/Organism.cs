@@ -14,8 +14,8 @@ namespace Organisms
     {
         public Neuron[] neurons;
         
-        public int maxlife = 2500;
-        public int life = 2500;
+        public int maxlife = 3000;
+        public int life = 3000;
         public int foodEaten = 0;
         public int totalFood = 0;
         private SpriteFont bangers;
@@ -315,11 +315,11 @@ namespace Organisms
                 // Accumulate probabilities to select the mutation based on the random number
                 if (randomNumber < addNeuronProbability)
                 {
-                    AddNewNeuron();
+                 //   AddNewNeuron();
                 }
                 else if (randomNumber < addNeuronProbability + addWeightProbability)
                 {
-                    AddNewWeight();
+                 //   AddNewWeight();
                 }
                 else if (randomNumber < addNeuronProbability + addWeightProbability + modifyWeightProbability)
                 {
