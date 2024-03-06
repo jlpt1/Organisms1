@@ -14,8 +14,8 @@ namespace Organisms
     {
         public Neuron[] neurons;
         
-        public int maxlife = 5000;
-        public int life = 5000;
+        public int maxlife = 2500;
+        public int life = 2500;
         public int foodEaten = 0;
         public int totalFood = 0;
         private SpriteFont bangers;

@@ -25,7 +25,7 @@ namespace Organisms
         InputPopup inputPopup;
         private KeyboardState currentKeyboardState;
         private KeyboardState previousKeyboardState;
-        public int foodChances = 150;
+        public int foodChances = 250;
         public int organismSpawnChance = 30;
         public int startNeurons = 30;
         public int startConnections = 200;
