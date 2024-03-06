@@ -2,14 +2,15 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Organisms;
+using System;
 
 public class InputPopup
 {
     private SpriteFont font;
     public string inputText = "";
     public bool isActive = false;
-    private Environment env;
-    public InputPopup(SpriteFont font, Environment env)
+    private Organisms.Environment env;
+    public InputPopup(SpriteFont font, Organisms.Environment env)
     {
         this.font = font;
         this.env = env;
@@ -48,7 +49,28 @@ public class InputPopup
                     env.organismSpawnChance = rate;
                 }
             }
-           
+            if (command == "/framerate")
+            {
+
+                string parameter = parts.Length > 1 ? parts[1] : null;
+                if (int.TryParse(parameter, out int framerate))
+                {
+                    env.TargetElapsedTime = TimeSpan.FromMilliseconds(1000.0 / framerate);
+                }
+            }
+            if (command == "/organismlife")
+            {
+
+                string parameter = parts.Length > 1 ? parts[1] : null;
+                if (int.TryParse(parameter, out int life))
+                {
+                    foreach (var organism in env.neuralNetworks)
+                    {
+                        organism.maxlife = life;
+                    
+                    }
+                }
+            }
             // Do something with inputText
         }
     }

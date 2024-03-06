@@ -34,7 +34,7 @@ namespace Organisms
         {
             Color col = new Color(1, 255, 255);
             Vector2 origin = new Vector2(pixelTexture.Width / 2, pixelTexture.Height / 2);
-            spriteBatch.Draw(pixelTexture, new Vector2(x,y), null, col, 0f, origin, .03f, SpriteEffects.None, 0f);
+            spriteBatch.Draw(pixelTexture, new Vector2(x,y), null, col, 0f, origin, .045f, SpriteEffects.None, 0f);
         }
     }
 }

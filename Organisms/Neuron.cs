@@ -17,7 +17,9 @@ namespace Organisms
         MovementRight,
         MovementLeft,
         ClosestFoodX,
-        ClosestFoodY
+        ClosestFoodY,
+        PositionX,
+        PositionY,
     }
     public struct Connection
     {
@@ -60,10 +62,10 @@ namespace Organisms
             neurons = network.neurons;
             this.index = index;
             Random r = new Random();
-            threshold = (float)r.NextDouble();
+            threshold = .01f;// (float)r.NextDouble();
             int temp = r.Next(30);
-            refactory = r.Next(temp);
-            timer = r.Next(temp);
+            refactory = r.Next(60);//r.Next(temp);
+            timer = 0;// r.Next(temp);
             // neurons[0] = null;
         }
 
@@ -77,18 +79,24 @@ namespace Organisms
         }
         public void propagate()
         {
-            for (int i = 0; i < neurons.Length; i++)
-            {
-             //   neurons[i].sum = 100;
-            }
+        
             foreach (Connection c in connections) 
             {
                 if (c.index < 0 || c.index >= neurons.Length)
                 {
-                    Console.WriteLine($"Invalid index: {c.index}, Neurons Length: {neurons.Length}");
                     continue; // Skip this iteration to avoid the exception
                 }
-                neurons[c.index].sum += activation * c.weight;
+                if (neurons[c.index].type != Type.ClosestFoodX || neurons[c.index].type != Type.ClosestFoodY || neurons[c.index].type != Type.PositionX || neurons[c.index].type != Type.PositionY)
+                    neurons[c.index].activation += activation * c.weight;
+                if (activation > 1)
+                {
+                    activation = 1;
+
+                }
+                if (activation < 0)
+                {
+                    activation = 0;
+                }
             }
         }
         private float Sigmoid(float x)
@@ -121,7 +129,7 @@ namespace Organisms
         public void Update(GameTime gameTime)
         {
 
-            timer++;
+            timer = timer + 1;
 
             if (timer > refactory)
             {
@@ -140,26 +148,41 @@ namespace Organisms
             }
             if (type == Type.ClosestFoodX)
             {
-                activation =  (Sigmoid(organism.closestFoodX / 10) * 2) - 1;
+                activation = (float)((Sigmoid(organism.closestFoodX / 100)));
             }
             else if (type == Type.ClosestFoodY)
             {
-                activation = (Sigmoid(organism.closestFoodY/10) * 2) - 1;
+                activation = (float)((Sigmoid(organism.closestFoodY/100)));
+            }
+            else if (type == Type.PositionX)
+            {
+               activation =  Sigmoid(organism.x / 200);
+            }
+            else if (type == Type.PositionY)
+            {
+                activation = Sigmoid(organism.y / 200);
             }
             else
             {
-                activation = (Sigmoid(sum) * 2) - 1;
+              //  activation = (Sigmoid(sum) * 2) - 1;
             }
            
-            
-            if (sum > 0)
+            if (activation > 0)
             {
-                sum = sum * 0.9f;
+                activation -= .05f;
             }
-            if (sum < 0.01f)
+            if (activation < 0)
             {
-                sum = 0;
+                activation = 0;
             }
+          //  if (sum > 0)
+            //{
+             //   sum = sum * 0.95f;
+          //  }
+           // if (sum < 0.01f)
+          //  {
+             //   sum = 0;
+          //  }
             if (activation > 1)
             {
                 activation = 1;
@@ -168,23 +191,7 @@ namespace Organisms
             {
                 activation = 0;
             }
-            if (type == Type.MovementRight)
-            {
-                organism.x += activation*5;
-            }
-            if (type == Type.MovementLeft)
-            {
-                organism.x -= activation*5;
-            }
-            if (type == Type.MovementUp)
-            {
-                organism.y -= activation*5;
-            }
-            if (type == Type.MovementDown)
-            {
-                organism.y += activation*5;
-            }
-
+            
 
 
 
@@ -234,6 +241,12 @@ namespace Organisms
             else if (type == Type.ClosestFoodY || type == Type.ClosestFoodX)
             {
                 Color col = new Color(0, 0, activation);
+
+                spriteBatch.Draw(texture, Position, null, col, 0f, origin, scale, SpriteEffects.None, 0f);
+            }
+            else if (type == Type.PositionX || type == Type.PositionY)
+            {
+                Color col = new Color(activation, 1, activation);
 
                 spriteBatch.Draw(texture, Position, null, col, 0f, origin, scale, SpriteEffects.None, 0f);
             }

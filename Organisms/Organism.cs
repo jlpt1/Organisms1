@@ -13,6 +13,8 @@ namespace Organisms
     public class Organism
     {
         public Neuron[] neurons;
+        
+        public int maxlife = 5000;
         public int life = 5000;
         public int foodEaten = 0;
         public int totalFood = 0;
@@ -58,7 +60,18 @@ namespace Organisms
             this.connectionCount = connectionCount;
             scale = neuronCount / 10;
 
-            for (int i = 0; i < neuronCount; i++)
+            neurons[0] = new Neuron(squareTexture, this, 0, Type.MovementLeft) { Position = new Vector2(((float)r.NextDouble() * 100) + 1780, (float)r.NextDouble() * 400) };
+            neurons[1] = new Neuron(squareTexture, this, 1, Type.MovementUp) { Position = new Vector2(((float)r.NextDouble() * 100) + 1780, (float)r.NextDouble() * 400) };
+            neurons[2] = new Neuron(squareTexture, this, 2, Type.MovementDown) { Position = new Vector2(((float)r.NextDouble() * 100) + 1780, (float)r.NextDouble() * 400) };
+            neurons[3] = new Neuron(squareTexture, this, 3, Type.MovementRight) { Position = new Vector2(((float)r.NextDouble() * 100) + 1780, (float)r.NextDouble() * 400) };
+            neurons[4] = new Neuron(squareTexture, this, 4, Type.ClosestFoodX) { Position = new Vector2(((float)r.NextDouble() * 100) + 1780, (float)r.NextDouble() * 400) };
+            neurons[5] = new Neuron(squareTexture, this, 5, Type.ClosestFoodY) { Position = new Vector2(((float)r.NextDouble() * 100) + 1780, (float)r.NextDouble() * 400) };
+            neurons[6] = new Neuron(squareTexture, this, 6, Type.PositionX) { Position = new Vector2(((float)r.NextDouble() * 100) + 1780, (float)r.NextDouble() * 400) };
+            neurons[7] = new Neuron(squareTexture, this, 7, Type.PositionY) { Position = new Vector2(((float)r.NextDouble() * 100) + 1780, (float)r.NextDouble() * 400) };
+
+
+
+            for (int i = 8; i < neuronCount; i++)
             {
 
 
@@ -66,9 +79,9 @@ namespace Organisms
 
 
 
-                if (r.Next(0, 11) < 4)
+                if (r.Next(0, 20) < 4)
                 {
-                    int temp = r.Next(0, 6);
+                    int temp = r.Next(0, 8);
                     if (temp == 0)
                     {
                         neurons[i] = new Neuron(squareTexture, this, i, Type.MovementLeft) { Position = new Vector2(((float)r.NextDouble() * 100)+1780, (float)r.NextDouble() * 400) };
@@ -93,7 +106,14 @@ namespace Organisms
                     {
                         neurons[i] = new Neuron(squareTexture, this, i, Type.ClosestFoodY) { Position = new Vector2(((float)r.NextDouble() * 100) + 1780, (float)r.NextDouble() * 400) };
                     }
-
+                    if (temp == 6)
+                    {
+                        neurons[i] = new Neuron(squareTexture, this, i, Type.PositionX) { Position = new Vector2(((float)r.NextDouble() * 100) + 1780, (float)r.NextDouble() * 400) };
+                    }
+                    if (temp == 7)
+                    {
+                        neurons[i] = new Neuron(squareTexture, this, i, Type.PositionY) { Position = new Vector2(((float)r.NextDouble() * 100) + 1780, (float)r.NextDouble() * 400) };
+                    }
 
                 }
                 else
@@ -151,17 +171,17 @@ namespace Organisms
 
         public void CheckForFoodCollision(List<Food> foods)
         {
-            Rectangle organismBounds = new Rectangle((int)x, (int)y, 20, 20);
+            Rectangle organismBounds = new Rectangle((int)x, (int)y, 30, 30);
             double closestDistance = double.MaxValue; // Initialize with a large value
 
             for (int i = foods.Count - 1; i >= 0; i--)
             {
                 var food = foods[i];
-                Rectangle foodBounds = new Rectangle((int)food.x, (int)food.y, 20, 20);
+                Rectangle foodBounds = new Rectangle((int)food.x, (int)food.y, 30, 30);
 
                 if (organismBounds.Intersects(foodBounds))
                 {
-                    life = 5000;
+                    life = maxlife;
                     foodEaten++;
                     totalFood++;
                     foods.RemoveAt(i); // Remove the food item from the list
@@ -174,8 +194,8 @@ namespace Organisms
                     if (distance < closestDistance)
                     {
                         closestDistance = distance;
-                        closestFoodX = Math.Abs(food.x - x); // Distance in X dimension
-                        closestFoodY = Math.Abs(food.y - y); // Distance in Y dimension
+                        closestFoodX = food.x - x; // Distance in X dimension
+                        closestFoodY = food.y - y; // Distance in Y dimension
                     }
                 }
             }
@@ -187,8 +207,21 @@ namespace Organisms
         private void AddNewNeuron()
 {
             // Create a new Neuron with a random type (excluding ClosestFood for simplicity)
-            Type newNeuronType = Type.Normal;//(Type)r.Next(Enum.GetNames(typeof(Type)).Length); // Exclude 'ClosestFood' type
-    Neuron newNeuron = new Neuron(squareTexture, this, neurons.Length, newNeuronType) { Position = new Vector2(((float)r.NextDouble() * 100) + 1780, ((float)r.NextDouble() * 200) + 0) }; ;
+            var typeProbabilities = new Dictionary<Type, double>
+    {
+        { Type.Normal, 1 },  // Example probability for Normal
+        { Type.MovementUp, 0.0 },  // Example probability for MovementUp
+        { Type.MovementDown, 0.0 },  // Example probability for MovementDown
+        { Type.MovementRight, 0.0 },  // Example probability for MovementRight
+        { Type.MovementLeft, 0.0 },  // Example probability for MovementLeft
+        { Type.ClosestFoodX, 0.0 },  // Example probability for ClosestFoodX
+        { Type.ClosestFoodY, 0.0 },  // Example probability for ClosestFoodY
+        { Type.PositionX, 0.0 },  // Example probability for ClosestFoodX
+        { Type.PositionY, 0.0 }  // Example probability for ClosestFoodY
+    };
+
+            Type newNeuronType = GetRandomType(typeProbabilities);
+            Neuron newNeuron = new Neuron(squareTexture, this, neurons.Length, newNeuronType) { Position = new Vector2(((float)r.NextDouble() * 100) + 1780, ((float)r.NextDouble() * 400) + 500) };
 
             // Resize the neurons array to accommodate the new neuron
             Array.Resize(ref neurons, neurons.Length + 1);
@@ -222,7 +255,7 @@ namespace Organisms
             {
                 int connectionIndex = r.Next(neuron.connections.Count);
                 Connection conn = neuron.connections[connectionIndex];
-                conn.weight += (float)(r.NextDouble() - 0.5) * (float).1; // Modify weight
+                conn.weight += (float)(r.NextDouble() - 0.5) * (float).5; // Modify weight
                 neuron.connections[connectionIndex] = conn; // Update the connection
             }
         }
@@ -267,8 +300,8 @@ namespace Organisms
         {
             // Define probabilities for each mutation type
             double addNeuronProbability = 0.01;  // 20% chance to add a new neuron
-            double addWeightProbability = 0.09;  // 20% chance to add a new weight
-            double modifyWeightProbability = .9;  // 40% chance to modify a weight
+            double addWeightProbability = 0.21;  // 20% chance to add a new weight
+            double modifyWeightProbability = .78;  // 40% chance to modify a weight
             double removeWeightProbability = 0;  // 10% chance to remove a weight
             double removeNeuronProbability = 0;  // 10% chance to remove a neuron
 
@@ -306,7 +339,8 @@ namespace Organisms
         {
             Random r = new Random();
             Organism o = new Organism(squareTexture, neurons.Length,connectionCount,null);
-
+            o.life = maxlife;
+            o.maxlife = maxlife;
             o.color = new Color(Math.Clamp(color.R + r.Next(-5, 5), 0, 255),
     Math.Clamp(color.G + r.Next(-5, 5), 0, 255),
     Math.Clamp(color.B + r.Next(-5, 5), 0, 255));
@@ -332,7 +366,7 @@ namespace Organisms
             o.gen = gen + 1;
             o.x = x;
             o.y = y;
-            o.mutate(connectionCount/10);
+            o.mutate(connectionCount/5);
             
             o.x += r.Next(-20, 20);
             o.y += r.Next(-20, 20);
@@ -340,18 +374,77 @@ namespace Organisms
             foreach (Neuron n in o.neurons)
             {
                 n.neurons = clonedNeurons;
+                
             }
+         
+            // Recalculate connection count after potential removals
+            o.connectionCount = o.neurons.Sum(n => n.connections.Count);
+
+
             return o;
         }
+
         public void Update(GameTime gameTime)
         {
 
             life--;
-            
-            foreach (var neuron in neurons) neuron.Update(gameTime);
-
+            float movementRight = 0;
+            float movementLeft = 0;
+            float movementDown = 0;
+                float movementUp = 0;
+            foreach (var neuron in neurons)
+            {
+                
+                
+                if (neuron.type == Type.MovementRight)
+                {
+                    movementRight = (float)(movementRight + neuron.activation * 2.5);
+                }
+                if (neuron.type == Type.MovementLeft)
+                {
+                    movementLeft = (float)(movementLeft + neuron.activation * 2.5);
+                }
+                if (neuron.type == Type.MovementUp)
+                {
+                    movementDown = (float)(movementDown + neuron.activation * 2.5);
+                }
+                if (neuron.type == Type.MovementDown)
+                {
+                    movementUp = (float)(movementUp + neuron.activation*2.5); 
+                }
+                
+                neuron.Update(gameTime);
+            }
+            movementUp = Math.Clamp(movementUp, 0, 20);
+            movementRight = Math.Clamp(movementRight, 0, 20);
+            movementLeft = Math.Clamp(movementLeft, 0, 20);
+            movementDown = Math.Clamp(movementDown, 0, 20);
+            x += movementRight;
+            y += movementDown;
+            x -= movementLeft;
+            y -= movementUp;
         }
+        private Type GetRandomType(Dictionary<Type, double> typeProbabilities)
+        {
+            double total = 0;
+            foreach (var kvp in typeProbabilities)
+            {
+                total += kvp.Value;
+            }
 
+            double randomNumber = r.NextDouble() * total;
+
+            foreach (var kvp in typeProbabilities)
+            {
+                if (randomNumber < kvp.Value)
+                {
+                    return kvp.Key;
+                }
+                randomNumber -= kvp.Value;
+            }
+
+            return default(Type); // Return a default value if something goes wrong
+        }
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
 

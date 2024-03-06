@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
 using System;
+using System.Threading.Tasks;
 
 namespace Organisms
 {
@@ -24,8 +25,11 @@ namespace Organisms
         InputPopup inputPopup;
         private KeyboardState currentKeyboardState;
         private KeyboardState previousKeyboardState;
-        public int foodChances = 350;
+        public int foodChances = 150;
         public int organismSpawnChance = 30;
+        public int startNeurons = 30;
+        public int startConnections = 200;
+        
         /// <summary>
         /// Constructs the game
         /// </summary>
@@ -37,6 +41,11 @@ namespace Organisms
             graphics.ApplyChanges();
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
+           // this.TargetElapsedTime = TimeSpan.FromMilliseconds(1000.0 / 60);
+            
+
+            graphics.ApplyChanges();
+
         }
 
         /// <summary>
@@ -48,9 +57,10 @@ namespace Organisms
             // TODO: Add your initialization logic here
             squareTexture = new Texture2D(GraphicsDevice, 1, 1);
             squareTexture.SetData(new Color[] { Color.White });
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 15; i++)
             {
-                Organism network = new Organism(squareTexture, 60, 500);
+                Organism network = new Organism(squareTexture, startNeurons, startConnections);
+
                 network.gen = 0;
                 neuralNetworks.Add(network);
             }
@@ -110,7 +120,7 @@ namespace Organisms
             Random r = new Random();
             for (int i = 0; i < 100; i++)
             {
-                Food f = new Food(texture, r.Next(40, 1600), r.Next(40, 800));
+                Food f = new Food(texture, r.Next(40, 1660), r.Next(40, 860));
                 food.Add(f);
             }
 
@@ -132,18 +142,18 @@ namespace Organisms
             inputPopup.Update();
             if (r.Next(0, 10000) < foodChances && food.Count < 500)
             {
-                Food f = new Food(texture, r.Next(40, 1600), r.Next(40, 800));
+                Food f = new Food(texture, r.Next(40, 1660), r.Next(40, 860));
                 food.Add(f);
             }
             if (r.Next(0, 10000) < organismSpawnChance)
             {
-                Organism network = new Organism(squareTexture, 60, 500);
+                Organism network = new Organism(squareTexture, startNeurons, startConnections);
                 network.gen = 0;
                 neuralNetworks.Add(network);
             }
             foreach (var nn in neuralNetworks)
             {
-                nn.CheckForFoodCollision(food);
+               
                 if (nn.x >= 1700)
                 {
                     nn.x = 1700;
@@ -183,7 +193,7 @@ namespace Organisms
                 {
 
                     float distance = Vector2.Distance(clickPosition, new Vector2(nn.x, nn.y));
-                    if (distance < 20)
+                    if (distance < 30)
                     {
                         foreach (var neuron in nn.neurons) neuron.LoadContent(Content);
                         // Change the neuron's activation
@@ -311,10 +321,11 @@ namespace Organisms
             }*/
 
             previousMouseState = currentMouseState;
-            foreach (var nn in neuralNetworks)
+            Parallel.ForEach(neuralNetworks, nn =>
             {
+           
                 nn.Update(gameTime);
-            }
+            });
             //foreach (var bat in neurons) bat.Update(gameTime);
             base.Update(gameTime);
         }
@@ -354,10 +365,10 @@ namespace Organisms
                 {
                     
                     // Add the reproduced neural network to the temporary list instead of the original list
-                    newNetworks.Add(nn.reproduce());
+                   newNetworks.Add(nn.reproduce());
                 }
 
-                spriteBatch.Draw(texture, new Vector2(nn.x, nn.y), null, nn.color, 0f, origin, 0.1525f, SpriteEffects.None, 0f);
+                spriteBatch.Draw(texture, new Vector2(nn.x, nn.y), null, nn.color, 0f, origin, 0.114375f, SpriteEffects.None, 0f);
             }
 
             // After the loop, add all new networks from the temporary list to the original list
