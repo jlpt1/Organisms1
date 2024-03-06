@@ -398,19 +398,19 @@ namespace Organisms
                 
                 if (neuron.type == Type.MovementRight)
                 {
-                    movementRight = (float)(movementRight + neuron.activation * 2.5);
+                    movementRight = (float)(movementRight + neuron.activation * 5);
                 }
                 if (neuron.type == Type.MovementLeft)
                 {
-                    movementLeft = (float)(movementLeft + neuron.activation * 2.5);
+                    movementLeft = (float)(movementLeft + neuron.activation * 5);
                 }
                 if (neuron.type == Type.MovementUp)
                 {
-                    movementDown = (float)(movementDown + neuron.activation * 2.5);
+                    movementDown = (float)(movementDown + neuron.activation * 5);
                 }
                 if (neuron.type == Type.MovementDown)
                 {
-                    movementUp = (float)(movementUp + neuron.activation*2.5); 
+                    movementUp = (float)(movementUp + neuron.activation*5); 
                 }
                 
                 neuron.Update(gameTime);
