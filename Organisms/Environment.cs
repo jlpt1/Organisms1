@@ -215,7 +215,11 @@ namespace Organisms
                 Random r = new Random();
                 foreach (var n in activeNetwork.neurons)
                 {
-                    n.sum = r.Next(0, 10);
+                    if (n.type == Type.Normal)
+                    {
+                        n.activation = 1;
+                    }
+                   
                 }
             }
             if (Keyboard.GetState().IsKeyDown(Keys.OemQuestion) && !inputPopup.isActive)

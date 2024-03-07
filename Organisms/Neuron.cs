@@ -89,8 +89,10 @@ namespace Organisms
                 {
                     continue; // Skip this iteration to avoid the exception
                 }
-                if (neurons[c.index].type != Type.ClosestFoodX || neurons[c.index].type != Type.ClosestFoodY || neurons[c.index].type != Type.PositionX || neurons[c.index].type != Type.PositionY)
+                if (neurons[c.index].type == Type.Normal || neurons[c.index].type == Type.MovementUp || neurons[c.index].type == Type.MovementDown || neurons[c.index].type == Type.MovementLeft || neurons[c.index].type == Type.MovementRight )
+                {
                     neurons[c.index].activation += activation * c.weight;
+                }
                 if (activation > 1)
                 {
                     activation = 1;
