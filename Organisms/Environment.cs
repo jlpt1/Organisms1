@@ -13,6 +13,7 @@ namespace Organisms
         private SpriteBatch spriteBatch;
         public List<Food> food = new List<Food>();
         private MouseState previousMouseState;
+        public int totalfoodeaten = 0;
         private Texture2D atlas;
         public List<Organism> neuralNetworks = new List<Organism>();
         //  public Neuron[] neurons;
@@ -176,7 +177,7 @@ namespace Organisms
             for (int i = neuralNetworks.Count - 1; i >= 0; i--)
             {
                 var nn = neuralNetworks[i];
-                nn.CheckForFoodCollision(food);
+                totalfoodeaten += nn.CheckForFoodCollision(food);
                 if (nn.life <= 0)
                 {
                     neuralNetworks.RemoveAt(i);
@@ -385,21 +386,28 @@ namespace Organisms
                         //spriteBatch.DrawString(bangers, c.weight.ToString(), new Vector2((Position.X+ neurons[c.index].Position.X)/2, (Position.Y + neurons[c.index].Position.Y) / 2), Color.White);
                         //  spriteBatch.DrawString(bangers, c.index.ToString(), new Vector2((Position.X + neurons[c.index].Position.X) / 2, (Position.Y + neurons[c.index].Position.Y-30) / 2), Color.White);
                         Color wireCol = new Color(-c.weight, c.weight, 0);
-                        if (neuron.active)
-                        {
-                            DrawLine(spriteBatch, squareTexture, neuron.Position, new Vector2(activeNetwork.neurons[c.index].Position.X, activeNetwork.neurons[c.index].Position.Y), Color.White, 1);
-                        }
-                        else
-                        {
+                       
+                    
                             DrawLine(spriteBatch, squareTexture, neuron.Position, new Vector2(activeNetwork.neurons[c.index].Position.X, activeNetwork.neurons[c.index].Position.Y), wireCol, 1);
+                        
+                    }
+                    
+                }
+                foreach (var n in activeNetwork.neurons)
+                {
+                    foreach (Connection c in n.connections)
+                    {
+                        if (n.active)
+                        {
+                            DrawLine(spriteBatch, squareTexture, n.Position, new Vector2(activeNetwork.neurons[c.index].Position.X, activeNetwork.neurons[c.index].Position.Y), Color.White, 3);
                         }
                     }
-                    neuron.active = false;
+                    n.active = false;
                 }
                 foreach (var neuron in activeNetwork.neurons)
                 {
                     neuron.Draw(gameTime, spriteBatch);
-
+                   
 
                 }
 
@@ -414,14 +422,14 @@ namespace Organisms
 
 
             }
-            int totalfoodeaten = 0;
+         
             int highestgen = 0;
             int avgneuroncount = 0;
             int highestneuroncount = 0;
             int highestconncount = 0;
             foreach (var n in neuralNetworks)
             {
-                totalfoodeaten += n.totalFood;
+                
                 avgneuroncount += n.count;
                 if (n.count >= highestneuroncount)
                 {
