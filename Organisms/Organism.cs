@@ -14,8 +14,8 @@ namespace Organisms
     {
         public Neuron[] neurons;
         
-        public int maxlife = 3000;
-        public int life = 3000;
+        public int maxlife = 5000;
+        public int life = 5000;
         public int foodEaten = 0;
         public int totalFood = 0;
         private SpriteFont bangers;
@@ -129,10 +129,15 @@ namespace Organisms
                 int rand = r.Next(neurons.Length);
                 int source = r.Next(neurons.Length - 1);
                 if (source >= rand) source++; // Ensuring source is different from rand
+                while ((neurons[source].type == Type.ClosestFoodX || neurons[source].type == Type.ClosestFoodY) && (neurons[rand].type == Type.MovementUp || neurons[rand].type == Type.MovementDown || neurons[rand].type == Type.MovementLeft || neurons[rand].type == Type.MovementRight))
+                {
+                  rand = r.Next(neurons.Length);
+                }
 
                 Connection c = new Connection(rand, (float)(r.NextDouble() * 2) - 1);
                 lock (neurons[source].connections)
                 {
+                    
                     neurons[source].connections.Add(c);
                 }
             });
@@ -241,16 +246,21 @@ namespace Organisms
             int sourceIndex = r.Next(neurons.Length);
             int targetIndex = r.Next(neurons.Length);
             connectionCount++;
-            // Avoid self-connection
-            if (sourceIndex != targetIndex)
-            {
+     
+          
+                    while ((neurons[sourceIndex].type == Type.ClosestFoodX || neurons[sourceIndex].type == Type.ClosestFoodY) && (neurons[targetIndex].type == Type.MovementUp || neurons[targetIndex].type == Type.MovementDown || neurons[targetIndex].type == Type.MovementLeft || neurons[targetIndex].type == Type.MovementRight))
+                    {
+                targetIndex = r.Next(neurons.Length);
+                    }
+
+
                 // Add connection if it doesn't exist
                 if (!neurons[sourceIndex].connections.Any(c => c.index == targetIndex))
                 {
                     neurons[sourceIndex].connections.Add(new Connection(targetIndex, (float)(r.NextDouble() * 2 - 1)));
                 }
             }
-        }
+        
 
         private void ModifyWeight()
         {

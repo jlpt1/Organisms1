@@ -26,10 +26,10 @@ namespace Organisms
         InputPopup inputPopup;
         private KeyboardState currentKeyboardState;
         private KeyboardState previousKeyboardState;
-        public int foodChances = 250;
-        public int organismSpawnChance = 30;
-        public int startNeurons = 20;
-        public int startConnections = 200;
+        public int foodChances = 150;
+        public int organismSpawnChance = 10;
+        public int startNeurons = 30;
+        public int startConnections = 120;
         
         /// <summary>
         /// Constructs the game
@@ -389,7 +389,7 @@ namespace Organisms
                     {
                         //spriteBatch.DrawString(bangers, c.weight.ToString(), new Vector2((Position.X+ neurons[c.index].Position.X)/2, (Position.Y + neurons[c.index].Position.Y) / 2), Color.White);
                         //  spriteBatch.DrawString(bangers, c.index.ToString(), new Vector2((Position.X + neurons[c.index].Position.X) / 2, (Position.Y + neurons[c.index].Position.Y-30) / 2), Color.White);
-                        Color wireCol = new Color(-c.weight, c.weight, 0);
+                        Color wireCol = new Color(-c.weight/5, c.weight/5, 0);
                        
                     
                             DrawLine(spriteBatch, squareTexture, neuron.Position, new Vector2(activeNetwork.neurons[c.index].Position.X, activeNetwork.neurons[c.index].Position.Y), wireCol, 1);
@@ -403,7 +403,7 @@ namespace Organisms
                     {
                         if (n.active)
                         {
-                            DrawLine(spriteBatch, squareTexture, n.Position, new Vector2(activeNetwork.neurons[c.index].Position.X, activeNetwork.neurons[c.index].Position.Y), Color.White, 3);
+                            DrawLine(spriteBatch, squareTexture, n.Position, new Vector2(activeNetwork.neurons[c.index].Position.X, activeNetwork.neurons[c.index].Position.Y), Color.White, 1);
                         }
                     }
                     n.active = false;

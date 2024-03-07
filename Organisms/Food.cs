@@ -15,7 +15,7 @@ namespace Organisms
         private Texture2D pixelTexture;
         public int x;
         public int y;
-
+        public bool bad = false;
         public Food(Texture2D pixelTexture, int x, int y) {
             this.pixelTexture = pixelTexture;
             this.x = x;

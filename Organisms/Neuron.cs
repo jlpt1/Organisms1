@@ -93,6 +93,7 @@ namespace Organisms
                 {
                     neurons[c.index].activation += activation * c.weight;
                 }
+
                 if (activation > 1)
                 {
                     activation = 1;
@@ -175,7 +176,7 @@ namespace Organisms
            
             if (activation > 0)
             {
-                activation -= .05f;
+                activation -= .01f;
             }
             if (activation < 0)
             {
