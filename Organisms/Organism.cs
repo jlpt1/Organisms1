@@ -304,9 +304,9 @@ namespace Organisms
         {
             float num = ((float)(neurons.Length / (11.42 * Math.Pow(neurons.Length, 1.29))));
             // Define probabilities for each mutation type
-            double addNeuronProbability = .09*num;  // 20% chance to add a new neuron
-            double addWeightProbability = 0.09;  // 20% chance to add a new weight
-            double modifyWeightProbability = 1-.09-num*.09;  // 40% chance to modify a weight
+            double addNeuronProbability = .01*num;  // 20% chance to add a new neuron
+            double addWeightProbability = 0.01;  // 20% chance to add a new weight
+            double modifyWeightProbability = 1-.01-num*.01;  // 40% chance to modify a weight
             double removeWeightProbability = 0;  // 10% chance to remove a weight
             double removeNeuronProbability = 0;  // 10% chance to remove a neuron
 
