@@ -26,6 +26,7 @@ namespace Organisms
         public long index;
         public float weight;
 
+
         public Connection(long index, float weight)
         {
             this.index = index;
@@ -51,6 +52,7 @@ namespace Organisms
         public float sum = 0;
         public int refactory;
         public int timer;
+        public bool active = false;
         private Random r = new Random();
 
 
@@ -82,6 +84,7 @@ namespace Organisms
         
             foreach (Connection c in connections) 
             {
+                
                 if (c.index < 0 || c.index >= neurons.Length)
                 {
                     continue; // Skip this iteration to avoid the exception
@@ -140,6 +143,7 @@ namespace Organisms
                 {
                     if (neurons != null)
                     {
+                        active = true;
                         propagate();
                     }
                    

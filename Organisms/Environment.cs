@@ -385,9 +385,16 @@ namespace Organisms
                         //spriteBatch.DrawString(bangers, c.weight.ToString(), new Vector2((Position.X+ neurons[c.index].Position.X)/2, (Position.Y + neurons[c.index].Position.Y) / 2), Color.White);
                         //  spriteBatch.DrawString(bangers, c.index.ToString(), new Vector2((Position.X + neurons[c.index].Position.X) / 2, (Position.Y + neurons[c.index].Position.Y-30) / 2), Color.White);
                         Color wireCol = new Color(-c.weight, c.weight, 0);
-
-                        DrawLine(spriteBatch, squareTexture, neuron.Position, new Vector2(activeNetwork.neurons[c.index].Position.X, activeNetwork.neurons[c.index].Position.Y), wireCol, 1);
+                        if (neuron.active)
+                        {
+                            DrawLine(spriteBatch, squareTexture, neuron.Position, new Vector2(activeNetwork.neurons[c.index].Position.X, activeNetwork.neurons[c.index].Position.Y), Color.White, 1);
+                        }
+                        else
+                        {
+                            DrawLine(spriteBatch, squareTexture, neuron.Position, new Vector2(activeNetwork.neurons[c.index].Position.X, activeNetwork.neurons[c.index].Position.Y), wireCol, 1);
+                        }
                     }
+                    neuron.active = false;
                 }
                 foreach (var neuron in activeNetwork.neurons)
                 {
