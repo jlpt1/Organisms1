@@ -60,12 +60,12 @@ namespace Organisms
             this.connectionCount = connectionCount;
             scale = neuronCount / 10;
 
-            neurons[0] = new Neuron(squareTexture, this, 0, Type.MovementLeft) { Position = new Vector2(((float)r.NextDouble() * 100) + 1780, (float)r.NextDouble() * 400) };
-            neurons[1] = new Neuron(squareTexture, this, 1, Type.MovementUp) { Position = new Vector2(((float)r.NextDouble() * 100) + 1780, (float)r.NextDouble() * 400) };
-            neurons[2] = new Neuron(squareTexture, this, 2, Type.MovementDown) { Position = new Vector2(((float)r.NextDouble() * 100) + 1780, (float)r.NextDouble() * 400) };
-            neurons[3] = new Neuron(squareTexture, this, 3, Type.MovementRight) { Position = new Vector2(((float)r.NextDouble() * 100) + 1780, (float)r.NextDouble() * 400) };
-            neurons[4] = new Neuron(squareTexture, this, 4, Type.ClosestFoodX) { Position = new Vector2(((float)r.NextDouble() * 100) + 1780, (float)r.NextDouble() * 400) };
-            neurons[5] = new Neuron(squareTexture, this, 5, Type.ClosestFoodY) { Position = new Vector2(((float)r.NextDouble() * 100) + 1780, (float)r.NextDouble() * 400) };
+            neurons[0] = new Neuron(squareTexture, this, 0, Type.MovementLeft, r.Next(55) + 5) { Position = new Vector2(((float)r.NextDouble() * 100) + 1780, (float)r.NextDouble() * 400) };
+            neurons[1] = new Neuron(squareTexture, this, 1, Type.MovementUp, r.Next(55) + 5) { Position = new Vector2(((float)r.NextDouble() * 100) + 1780, (float)r.NextDouble() * 400) };
+            neurons[2] = new Neuron(squareTexture, this, 2, Type.MovementDown, r.Next(55) + 5) { Position = new Vector2(((float)r.NextDouble() * 100) + 1780, (float)r.NextDouble() * 400) };
+            neurons[3] = new Neuron(squareTexture, this, 3, Type.MovementRight, r.Next(55) + 5) { Position = new Vector2(((float)r.NextDouble() * 100) + 1780, (float)r.NextDouble() * 400) };
+            neurons[4] = new Neuron(squareTexture, this, 4, Type.ClosestFoodX, r.Next(55) + 5) { Position = new Vector2(((float)r.NextDouble() * 100) + 1780, (float)r.NextDouble() * 400) };
+            neurons[5] = new Neuron(squareTexture, this, 5, Type.ClosestFoodY, r.Next(55) + 5) { Position = new Vector2(((float)r.NextDouble() * 100) + 1780, (float)r.NextDouble() * 400) };
            // neurons[6] = new Neuron(squareTexture, this, 6, Type.PositionX) { Position = new Vector2(((float)r.NextDouble() * 100) + 1780, (float)r.NextDouble() * 400) };
            // neurons[7] = new Neuron(squareTexture, this, 7, Type.PositionY) { Position = new Vector2(((float)r.NextDouble() * 100) + 1780, (float)r.NextDouble() * 400) };
 
@@ -84,41 +84,41 @@ namespace Organisms
                     int temp = r.Next(0, 6);
                     if (temp == 0)
                     {
-                        neurons[i] = new Neuron(squareTexture, this, i, Type.MovementLeft) { Position = new Vector2(((float)r.NextDouble() * 100)+1780, (float)r.NextDouble() * 400) };
+                        neurons[i] = new Neuron(squareTexture, this, i, Type.MovementLeft, r.Next(55) + 5) { Position = new Vector2(((float)r.NextDouble() * 100)+1780, (float)r.NextDouble() * 400) };
                     }
                     if (temp == 1)
                     {
-                        neurons[i] = new Neuron(squareTexture, this, i, Type.MovementRight) { Position = new Vector2(((float)r.NextDouble() * 100) + 1780, (float)r.NextDouble() * 400) };
+                        neurons[i] = new Neuron(squareTexture, this, i, Type.MovementRight, r.Next(55) + 5) { Position = new Vector2(((float)r.NextDouble() * 100) + 1780, (float)r.NextDouble() * 400) };
                     }
                     if (temp == 2)
                     {
-                        neurons[i] = new Neuron(squareTexture, this, i, Type.MovementUp) { Position = new Vector2(((float)r.NextDouble() * 100) + 1780, (float)r.NextDouble() * 400) };
+                        neurons[i] = new Neuron(squareTexture, this, i, Type.MovementUp, r.Next(55) + 5) { Position = new Vector2(((float)r.NextDouble() * 100) + 1780, (float)r.NextDouble() * 400) };
                     }
                     if (temp == 3)
                     {
-                        neurons[i] = new Neuron(squareTexture, this, i, Type.MovementDown) { Position = new Vector2(((float)r.NextDouble() * 100) + 1780, (float)r.NextDouble() * 400) };
+                        neurons[i] = new Neuron(squareTexture, this, i, Type.MovementDown, r.Next(55) + 5) { Position = new Vector2(((float)r.NextDouble() * 100) + 1780, (float)r.NextDouble() * 400) };
                     }
                     if (temp == 4)
                     {
-                        neurons[i] = new Neuron(squareTexture, this, i, Type.ClosestFoodX) { Position = new Vector2(((float)r.NextDouble() * 100) + 1780, (float)r.NextDouble() * 400) };
+                        neurons[i] = new Neuron(squareTexture, this, i, Type.ClosestFoodX, r.Next(55) + 5) { Position = new Vector2(((float)r.NextDouble() * 100) + 1780, (float)r.NextDouble() * 400) };
                     }
                     if (temp == 5)
                     {
-                        neurons[i] = new Neuron(squareTexture, this, i, Type.ClosestFoodY) { Position = new Vector2(((float)r.NextDouble() * 100) + 1780, (float)r.NextDouble() * 400) };
+                        neurons[i] = new Neuron(squareTexture, this, i, Type.ClosestFoodY, r.Next(55) + 5) { Position = new Vector2(((float)r.NextDouble() * 100) + 1780, (float)r.NextDouble() * 400) };
                     }
                     if (temp == 6)
                     {
-                        neurons[i] = new Neuron(squareTexture, this, i, Type.PositionX) { Position = new Vector2(((float)r.NextDouble() * 100) + 1780, (float)r.NextDouble() * 400) };
+                        neurons[i] = new Neuron(squareTexture, this, i, Type.PositionX, r.Next(55) + 5) { Position = new Vector2(((float)r.NextDouble() * 100) + 1780, (float)r.NextDouble() * 400) };
                     }
                     if (temp == 7)
                     {
-                        neurons[i] = new Neuron(squareTexture, this, i, Type.PositionY) { Position = new Vector2(((float)r.NextDouble() * 100) + 1780, (float)r.NextDouble() * 400) };
+                        neurons[i] = new Neuron(squareTexture, this, i, Type.PositionY, r.Next(55) + 5) { Position = new Vector2(((float)r.NextDouble() * 100) + 1780, (float)r.NextDouble() * 400) };
                     }
 
                 }
                 else
                 {
-                    neurons[i] = new Neuron(squareTexture, this, i, Type.Normal) { Position = new Vector2(((float)r.NextDouble() * 100)+1780, ((float)r.NextDouble() * 400)+500) };
+                    neurons[i] = new Neuron(squareTexture, this, i, Type.Normal, r.Next(55) + 5) { Position = new Vector2(((float)r.NextDouble() * 100)+1780, ((float)r.NextDouble() * 400)+500) };
                 }
 
 
@@ -230,7 +230,7 @@ namespace Organisms
     };
 
             Type newNeuronType = GetRandomType(typeProbabilities);
-            Neuron newNeuron = new Neuron(squareTexture, this, neurons.Length, newNeuronType) { Position = new Vector2(((float)r.NextDouble() * 100) + 1780, ((float)r.NextDouble() * 400) + 500) };
+            Neuron newNeuron = new Neuron(squareTexture, this, neurons.Length, newNeuronType, r.Next(55) + 5) { Position = new Vector2(((float)r.NextDouble() * 100) + 1780, ((float)r.NextDouble() * 400) + 500) };
 
             // Resize the neurons array to accommodate the new neuron
             Array.Resize(ref neurons, neurons.Length + 1);
@@ -424,19 +424,19 @@ namespace Organisms
                 
                 if (neuron.type == Type.MovementRight)
                 {
-                    movementRight = (float)(movementRight + neuron.activation * 2.5);
+                    movementRight = (float)(movementRight + neuron.activation * 5);
                 }
                 if (neuron.type == Type.MovementLeft)
                 {
-                    movementLeft = (float)(movementLeft + neuron.activation * 2.5);
+                    movementLeft = (float)(movementLeft + neuron.activation * 5);
                 }
                 if (neuron.type == Type.MovementUp)
                 {
-                    movementDown = (float)(movementDown + neuron.activation * 2.5);
+                    movementDown = (float)(movementDown + neuron.activation * 5);
                 }
                 if (neuron.type == Type.MovementDown)
                 {
-                    movementUp = (float)(movementUp + neuron.activation*2.5); 
+                    movementUp = (float)(movementUp + neuron.activation*5); 
                 }
                 
                 neuron.Update(gameTime);

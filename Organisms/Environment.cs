@@ -26,10 +26,10 @@ namespace Organisms
         InputPopup inputPopup;
         private KeyboardState currentKeyboardState;
         private KeyboardState previousKeyboardState;
-        public int foodChances = 150;
-        public int organismSpawnChance = 10;
-        public int startNeurons = 30;
-        public int startConnections = 120;
+        public int foodChances = 100;
+        public int organismSpawnChance = 30;
+        public int startNeurons = 15;
+        public int startConnections = 150;
         
         /// <summary>
         /// Constructs the game
@@ -58,7 +58,7 @@ namespace Organisms
             // TODO: Add your initialization logic here
             squareTexture = new Texture2D(GraphicsDevice, 1, 1);
             squareTexture.SetData(new Color[] { Color.White });
-            for (int i = 0; i < 15; i++)
+            for (int i = 0; i < 1; i++)
             {
                 Organism network = new Organism(squareTexture, startNeurons, startConnections);
 
@@ -121,7 +121,7 @@ namespace Organisms
             Random r = new Random();
             for (int i = 0; i < 100; i++)
             {
-                Food f = new Food(texture, r.Next(40, 1660), r.Next(40, 860));
+                Food f = new Food(texture, r.Next(240, 1660), r.Next(140, 860));
                 food.Add(f);
             }
 
@@ -143,7 +143,7 @@ namespace Organisms
             inputPopup.Update();
             if (r.Next(0, 10000) < foodChances && food.Count < 500)
             {
-                Food f = new Food(texture, r.Next(40, 1660), r.Next(40, 860));
+                Food f = new Food(texture, r.Next(240, 1660), r.Next(140, 860));
                 food.Add(f);
             }
             if (r.Next(0, 10000) < organismSpawnChance)
@@ -159,17 +159,17 @@ namespace Organisms
                 {
                     nn.x = 1700;
                 }
-                if (nn.x < 10)
+                if (nn.x < 160)
                 {
-                    nn.x = 10;
+                    nn.x = 160;
                 }
                 if (nn.y >= 900)
                 {
                     nn.y = 900;
                 }
-                if (nn.y < 10)
+                if (nn.y < 80)
                 {
-                    nn.y = 10;
+                    nn.y = 80;
                 }
 
             }
@@ -183,8 +183,21 @@ namespace Organisms
                     neuralNetworks.RemoveAt(i);
                 }
             }
+
             // TODO: Add your update logic here
             MouseState currentMouseState = Mouse.GetState();
+            if (currentMouseState.LeftButton == ButtonState.Pressed && Keyboard.GetState().IsKeyDown(Keys.D))
+            {
+                Vector2 clickPosition = new Vector2(currentMouseState.X, currentMouseState.Y);
+                Food f = new Food(texture, (int)clickPosition.X,(int)clickPosition.Y);
+                food.Add(f);
+                // Your code for placing food goes here
+                // Example: PlaceFood(clickPosition);
+
+
+                // If you're interacting with neural networks or other entities as in your original code,
+                // you may still check for those conditions here.
+            }
             if (currentMouseState.LeftButton == ButtonState.Pressed && previousMouseState.LeftButton == ButtonState.Released)
             {
                 Vector2 clickPosition = new Vector2(currentMouseState.X, currentMouseState.Y);
@@ -357,7 +370,7 @@ namespace Organisms
         /// <param name="gameTime">the measured game time</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.Black);
+            GraphicsDevice.Clear(Color.Gray);
 
             spriteBatch.Begin();
            
@@ -452,7 +465,10 @@ namespace Organisms
             {
                 avgneuroncount = avgneuroncount / neuralNetworks.Count;
             }
-         
+            if (highestgen > 100)
+            {
+                organismSpawnChance = 0;
+            }
           
             spriteBatch.DrawString(bangersSmall, "Total food: " + food.Count, new Vector2(0, 60), Color.Red);
             spriteBatch.DrawString(bangersSmall, "Total food eaten: "+ totalfoodeaten, new Vector2(0, 80), Color.Red);

@@ -56,7 +56,7 @@ namespace Organisms
         private Random r = new Random();
 
 
-        public Neuron(Texture2D pixelTexture, Organism network, int index, Type type)
+        public Neuron(Texture2D pixelTexture, Organism network, int index, Type type, int refactory)
         {
             this.pixelTexture = pixelTexture;
             this.type = type;
@@ -66,7 +66,7 @@ namespace Organisms
             Random r = new Random();
             threshold = .01f;// (float)r.NextDouble();
             int temp = r.Next(30);
-            refactory = r.Next(60);//r.Next(temp);
+            this.refactory = refactory;
             timer = 0;// r.Next(temp);
             // neurons[0] = null;
         }
@@ -112,7 +112,7 @@ namespace Organisms
         public Neuron Clone(Organism newOrganism)
         {
             // Create a new Neuron instance with the new Organism reference
-            Neuron clone = new Neuron(this.pixelTexture, newOrganism, this.index, this.type)
+            Neuron clone = new Neuron(this.pixelTexture, newOrganism, this.index, this.type,this.refactory)
             {
                 // Shared resources and primitive types can be copied directly
                 texture = this.texture,
