@@ -121,7 +121,7 @@ namespace Organisms
                 activation = this.activation,
                 threshold = this.threshold,
                 sum = this.sum,
-                refactory = this.refactory+1,
+                refactory = this.refactory,
                 timer = this.timer,
 
                 // Deep copy the connections list

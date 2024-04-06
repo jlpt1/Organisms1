@@ -370,7 +370,7 @@ namespace Organisms
         /// <param name="gameTime">the measured game time</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.Gray);
+            GraphicsDevice.Clear(Color.Black);
 
             spriteBatch.Begin();
            
