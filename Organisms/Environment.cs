@@ -6,11 +6,24 @@ using System;
 using System.Threading.Tasks;
 using System.IO;
 using System.Diagnostics;
+using Firebase.Storage;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Rebar;
 using System.Runtime.InteropServices;
 using System.Xml.Linq;
 using SharpDX.Direct2D1.Effects;
 using SharpDX.Direct3D9;
+
+using FireSharp.Config;
+using FireSharp.Interfaces;
+using FireSharp.Response;
+using Google.Cloud.Firestore.V1;
+using Google.Apis.Auth.OAuth2;
+using Google.Cloud.Firestore;
+using Google.Cloud.Firestore.V1;
+
+using Grpc.Auth;
+using Grpc.Core;
+using Firebase.Storage;
 
 namespace Organisms
 {
@@ -47,6 +60,9 @@ namespace Organisms
         /// <summary>
         /// Constructs the game
         /// </summary>
+        /// 
+
+        MyFirebaseStorage firebaseStorage = new MyFirebaseStorage();
         public Environment()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -55,15 +71,18 @@ namespace Organisms
             graphics.ApplyChanges();
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
-           // this.TargetElapsedTime = TimeSpan.FromMilliseconds(1000.0 / 60);
-            
+
+
 
             graphics.ApplyChanges();
 
         }
-
+        
+            
+ 
         public void export(string name)
         {
+            
             // Define the path where the CSV file will be saved
             string fileName =  name+".txt"; // Adjust the file name as needed
             string filePath;
@@ -842,6 +861,122 @@ namespace Organisms
                 return null;
             }
         }
+        public void uploadOrganism(string name)
+        {
+            // Use Task.Run to handle the file upload asynchronously
+            Task.Run(async () =>
+            {
+                try
+                {
+                    string fileName = name + ".txt"; // Adjust the file name as needed
+                    string filePath;
+                   
+                        string currentDirectory = AppDomain.CurrentDomain.BaseDirectory;
+                        filePath = Path.Combine(currentDirectory, fileName);
+                        string localFilePath = filePath; // Change this path to your actual file path
+                    string destinationPath = "uploadedOrganisms/"+name+".txt"; // This is the path where the file will be stored in Firebase
+
+                    await firebaseStorage.UploadFileAsync(localFilePath, destinationPath);
+                    Console.WriteLine("File uploaded successfully!");
+                }
+                catch (Exception ex)
+                {
+                    // Handle exceptions
+                    Console.WriteLine("Error uploading file: " + ex.Message);
+                }
+            });
+        }
+
+        public void downloadOrganism(string name)
+        {
+            // Use Task.Run to handle the file download asynchronously
+            Task.Run(async () =>
+            {
+                try
+                {
+                    string fileName = name + ".txt"; // Adjust the file name as needed
+                    string filePath;
+
+                    string currentDirectory = AppDomain.CurrentDomain.BaseDirectory;
+                    filePath = Path.Combine(currentDirectory, fileName);
+                    string localFilePath = filePath; // Change this path to your desired download location
+                    string sourcePath = "uploadedOrganisms/" + name + ".txt"; // This is the path where the file is stored in Firebase
+
+                    await firebaseStorage.DownloadFileAsync(sourcePath, localFilePath);
+                    Console.WriteLine("File downloaded successfully!");
+                }
+                catch (Exception ex)
+                {
+                    // Handle exceptions
+                    Console.WriteLine("Error downloading file: " + ex.Message);
+                }
+            });
+        }
+
+        public void uploadEnvironment(string folderPath)
+        {
+            Task.Run(async () =>
+            {
+                try
+                {
+                    string folderName = new DirectoryInfo(folderPath).Name; // Extract folder name from the folder path
+                    string destinationFolder = "uploadedEnvironments/" + folderName + "/"; // Destination folder in Firebase
+
+                    // Get list of files in the folder
+                    string[] files = Directory.GetFiles(folderPath);
+
+                    foreach (string file in files)
+                    {
+                        string fileName = Path.GetFileName(file);
+                        string destinationPath = destinationFolder + fileName; // Destination path for each file in Firebase
+
+                        // Upload each file to Firebase
+                        await firebaseStorage.UploadFileAsync(file, destinationPath);
+                        Console.WriteLine("File uploaded successfully: " + fileName);
+                    }
+
+                    Console.WriteLine("Folder uploaded successfully!");
+                }
+                catch (Exception ex)
+                {
+                    // Handle exceptions
+                    Console.WriteLine("Error uploading folder: " + ex.Message);
+                }
+            });
+        }
+
+        public void downloadEnvironment(string folderPath)
+        {
+            Task.Run(() =>
+            {
+                try
+                {
+                    string folderName = new DirectoryInfo(folderPath).Name; // Extract folder name from the folder path
+                    string destinationFolder = "uploadedEnvironments/" + folderName + "/"; // Destination folder in Firebase
+
+                    // Get list of files in the folder
+                    string[] files = Directory.GetFiles(folderPath);
+
+                    foreach (string file in files)
+                    {
+                        string fileName = Path.GetFileName(file);
+                        string destinationPath = destinationFolder + fileName; // Destination path for each file in Firebase
+
+                        // Download each file from Firebase asynchronously
+                        firebaseStorage.DownloadFileAsync(destinationPath, file).Wait();
+                        Console.WriteLine("File downloaded successfully: " + fileName);
+                    }
+
+                    Console.WriteLine("Folder downloaded successfully!");
+                }
+                catch (Exception ex)
+                {
+                    // Handle exceptions
+                    Console.WriteLine("Error downloading folder: " + ex.Message);
+                }
+            });
+        }
+
 
     }
 }

@@ -107,6 +107,26 @@ public class InputPopup
                 string parameter = parts.Length > 1 ? parts[1] : null;
                 env.export(parameter);
             }
+            if (command == "/uploadenv")
+            {
+                string parameter = parts.Length > 1 ? parts[1] : null;
+                env.uploadEnvironment(parameter);
+            }
+            if (command == "/downloadenv")
+            {
+                string parameter = parts.Length > 1 ? parts[1] : null;
+                env.downloadEnv(parameter);
+            }
+            if (command == "/upload")
+            {
+                string parameter = parts.Length > 1 ? parts[1] : null;
+                env.uploadOrganism(parameter);
+            }
+            if (command == "/download")
+            {
+                string parameter = parts.Length > 1 ? parts[1] : null;
+                env.downloadOrganism(parameter);
+            }
             // Do something with inputText
         }
     }
