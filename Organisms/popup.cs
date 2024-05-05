@@ -84,21 +84,28 @@ public class InputPopup
             {
 
                 string parameter = parts.Length > 1 ? parts[1] : null;
-                
-                env.
+
+                env.save(parameter);
             }
             if (command == "/load")
             {
 
                 string parameter = parts.Length > 1 ? parts[1] : null;
                 
-                    env.LoadFromFile(parameter);
+                    env.neuralNetworks.Add(env.LoadFromFile(parameter));
                 
             }
+            if (command == "/loadenv")
+            {
 
+                string parameter = parts.Length > 1 ? parts[1] : null;
+
+                env.load(parameter);
+            }
             if (command == "/export")
             {
-                env.export();
+                string parameter = parts.Length > 1 ? parts[1] : null;
+                env.export(parameter);
             }
             // Do something with inputText
         }

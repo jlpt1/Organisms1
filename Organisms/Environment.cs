@@ -8,6 +8,9 @@ using System.IO;
 using System.Diagnostics;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Rebar;
 using System.Runtime.InteropServices;
+using System.Xml.Linq;
+using SharpDX.Direct2D1.Effects;
+using SharpDX.Direct3D9;
 
 namespace Organisms
 {
@@ -31,7 +34,7 @@ namespace Organisms
         private KeyboardState currentKeyboardState;
         private KeyboardState previousKeyboardState;
         public int foodChances = 100;
-        public int organismSpawnChance = 30;
+        public int organismSpawnChance = 0;
         public int startNeurons = 15;
         public int startConnections = 150;
 
@@ -59,12 +62,15 @@ namespace Organisms
 
         }
 
-        public void export()
+        public void export(string name)
         {
             // Define the path where the CSV file will be saved
-            string filePath = "path/to/your/data.csv";
-
-            using (StreamWriter writer = new StreamWriter(filePath))
+            string fileName =  name+".txt"; // Adjust the file name as needed
+            string filePath;
+           
+                string currentDirectory = AppDomain.CurrentDomain.BaseDirectory;
+                filePath = Path.Combine(currentDirectory, fileName);
+                using (StreamWriter writer = new StreamWriter(filePath))
             {
                 // Write CSV header
                 writer.WriteLine("Metric,Value");
@@ -84,8 +90,151 @@ namespace Organisms
         {
             foreach (Organism o in neuralNetworks)
             {
-                int index = neuralNetworks.IndexOf(activeNetwork);
+                int index = neuralNetworks.IndexOf(o);
                 o.SaveToFile(index, "organism" + index, folder);
+            }
+
+
+            string currentDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            string folderPath = Path.Combine(currentDirectory, folder);
+            // Create the folder if it doesn't exist
+            if (!Directory.Exists(folderPath))
+            {
+                Directory.CreateDirectory(folderPath);
+            }
+
+            string foodPath = Path.Combine(folderPath, "food.txt");
+            string statsPath = Path.Combine(folderPath, "stats.txt");
+
+            using (StreamWriter writer = new StreamWriter(foodPath))
+            {
+                foreach (Food f in food)
+                {
+                    writer.WriteLine("["+f.x+","+f.y+"]");
+                }
+                
+            }
+            using (StreamWriter writer = new StreamWriter(statsPath))
+            {
+
+                writer.WriteLine("Total food," + food.Count);
+                writer.WriteLine("Total food eaten," + totalfoodeaten);
+                writer.WriteLine("Total organisms," + neuralNetworks.Count);
+                writer.WriteLine("Average neuron count," + avgneuroncount);
+                writer.WriteLine("Highest neuron count," + highestneuroncount);
+                writer.WriteLine("Highest connection count," + highestconncount);
+                writer.WriteLine("Highest generation," + highestgen);
+            }
+
+        }
+        public void load(string folder)
+        {
+            try
+            {
+
+                string currentDirectory = AppDomain.CurrentDomain.BaseDirectory;
+                string folderPath = Path.Combine(currentDirectory, folder);
+
+                // Get all files in the specified folder
+                string[] files = Directory.GetFiles(folderPath, "*.txt");
+                neuralNetworks.Clear();
+                food.Clear();
+                // Iterate over each file
+                foreach (string filePath in files)
+                {
+                    // Extract file name without extension
+                    string fileName = Path.GetFileNameWithoutExtension(filePath);
+
+                    // Extract index from the file name
+                    int index;
+                    if (int.TryParse(fileName.Replace("organism", ""), out index))
+                    {
+                        
+                        Organism o = LoadFromFile("organism" + index, folder);
+                        neuralNetworks.Add(o);
+                    }
+                    if (fileName.Equals("food"))
+                    {
+
+                        string[] lines = File.ReadAllLines(filePath);
+                        foreach (string line in lines)
+                        {
+                            string[] parts = line.Trim('[', ']').Split(',');
+                            if (parts.Length == 2 && int.TryParse(parts[0], out int x) && int.TryParse(parts[1], out int y))
+                            {
+                                Food f = new Food(texture, x, y);
+                                food.Add(f);
+                            }
+                            else
+                            {
+                                Console.WriteLine("Invalid format in line: " + line);
+                            }
+                        }
+                    }
+                    if (fileName.Equals("stats"))
+                    {
+                        int totalFood = 0;
+                        int totalFoodEaten = 0;
+                        int totalOrganisms = 0;
+                        double averageNeuronCount = 0;
+                        int highestNeuronCount = 0;
+                        int highestConnectionCount = 0;
+                        int highestGeneration = 0;
+
+                        // Read all lines from the file
+                        string[] lines = File.ReadAllLines(filePath);
+                        foreach (string line in lines)
+                        {
+                            // Split the line by comma to get the key-value pair
+                            string[] parts = line.Split(',');
+                            if (parts.Length == 2)
+                            {
+                                string key = parts[0].Trim();
+                                string value = parts[1].Trim();
+
+                                // Parse the value based on the key and update the corresponding variable
+                                switch (key)
+                                {
+                                    case "Total food":
+                                        int.TryParse(value, out totalFood);
+                                        break;
+                                    case "Total food eaten":
+                                        int.TryParse(value, out totalFoodEaten);
+                                        break;
+                                    case "Total organisms":
+                                        int.TryParse(value, out totalOrganisms);
+                                        break;
+                                    case "Average neuron count":
+                                        double.TryParse(value, out averageNeuronCount);
+                                        break;
+                                    case "Highest neuron count":
+                                        int.TryParse(value, out highestNeuronCount);
+                                        break;
+                                    case "Highest connection count":
+                                        int.TryParse(value, out highestConnectionCount);
+                                        break;
+                                    case "Highest generation":
+                                        int.TryParse(value, out highestGeneration);
+                                        break;
+                                    default:
+                                        Console.WriteLine("Unknown key: " + key);
+                                        break;
+                                }
+                            }
+                            else
+                            {
+                                Console.WriteLine("Invalid format in line: " + line);
+                            }
+                        }
+                    }
+
+                    }
+            }
+            catch (Exception ex)
+            {
+                // Log the error or display a message
+                Debug.WriteLine($"Error loading files from folder: {ex.Message}");
+                Debug.WriteLine($"Error loading files from folder StackTrace: {ex.StackTrace}");
             }
         }
         /// <summary>
@@ -97,7 +246,7 @@ namespace Organisms
             // TODO: Add your initialization logic here
             squareTexture = new Texture2D(GraphicsDevice, 1, 1);
             squareTexture.SetData(new Color[] { Color.White });
-            for (int i = 0; i < 1; i++)
+            for (int i = 0; i < 0; i++)
             {
                 Organism network = new Organism(squareTexture, startNeurons, startConnections);
 
@@ -523,7 +672,7 @@ namespace Organisms
             base.Draw(gameTime);
         }
 
-        public void LoadFromFile(string fileName)
+        public Organism LoadFromFile(string fileName, string folderName = "")
         {
             try
             {
@@ -531,7 +680,18 @@ namespace Organisms
                 string directory = AppDomain.CurrentDomain.BaseDirectory;
 
                 // Combine the directory and the file name to get the full file path
-                string filePath = Path.Combine(directory, fileName) + ".txt";
+                if (!string.IsNullOrEmpty(folderName))
+                {
+                    directory = Path.Combine(directory, folderName);
+                    // Ensure the folder exists, if not, return null
+                    if (!Directory.Exists(directory))
+                    {
+                        Console.WriteLine("Folder not found: " + folderName);
+                        return null;
+                    }
+                }
+
+                string filePath = Path.Combine(directory, fileName + ".txt");
                 // Create a new instance of Organism
                 Organism organism = new Organism(null); // Pass null for squareTexture for now
                 Connection c = new Connection();
@@ -672,14 +832,14 @@ namespace Organisms
                     }
                 }
 
-                neuralNetworks.Add(organism);
+                return organism;
             }
             catch (Exception ex)
             {
                 // Log the error or display a message
                 Debug.WriteLine($"Error loading file: {ex.Message}");
                 Debug.WriteLine($"Error loading file StackTrace: {ex.StackTrace}");
-              
+                return null;
             }
         }
 
