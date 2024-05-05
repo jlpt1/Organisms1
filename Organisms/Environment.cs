@@ -945,38 +945,54 @@ namespace Organisms
             });
         }
 
-        public void downloadEnvironment(string folderPath)
+        public async Task downloadEnvironment(string name)
         {
-            Task.Run(() =>
+            // Use Task.Run to handle the file download asynchronously
+            await Task.Run(async () =>
             {
                 try
                 {
-                    string folderName = new DirectoryInfo(folderPath).Name; // Extract folder name from the folder path
-                    string destinationFolder = "uploadedEnvironments/" + folderName + "/"; // Destination folder in Firebase
+                    string fileName = name; // Adjust the file name as needed
+                    string filePath;
+                    Directory.CreateDirectory(name);
+                    string currentDirectory = AppDomain.CurrentDomain.BaseDirectory;
+                    filePath = Path.Combine(currentDirectory, fileName);
+                    string localFilePath = filePath; // Change this path to your desired download location
+                    string sourcePath = "uploadedEnvironments/" + name + "/"; // This is the path where the file is stored in Firebase
 
-                    // Get list of files in the folder
-                    string[] files = Directory.GetFiles(folderPath);
-
-                    foreach (string file in files)
+                    // Attempt to download organism files
+                    int organismIndex = 0;
+                    while (true)
                     {
-                        string fileName = Path.GetFileName(file);
-                        string destinationPath = destinationFolder + fileName; // Destination path for each file in Firebase
-
-                        // Download each file from Firebase asynchronously
-                        firebaseStorage.DownloadFileAsync(destinationPath, file).Wait();
-                        Console.WriteLine("File downloaded successfully: " + fileName);
+                        string organismFileName = $"organism{organismIndex}.txt";
+                        string organismLocalPath = Path.Combine(currentDirectory, name, organismFileName);
+                        try
+                        {
+                            await firebaseStorage.DownloadFileAsync(sourcePath + organismFileName, organismLocalPath);
+                            Console.WriteLine($"Downloaded: {organismFileName}");
+                            organismIndex++;
+                        }
+                        catch (Exception)
+                        {
+                            // When organism file is not found, break the loop
+                            break;
+                        }
                     }
 
-                    Console.WriteLine("Folder downloaded successfully!");
+                    // Download food.txt and stats.txt
+                    await firebaseStorage.DownloadFileAsync(sourcePath + "food.txt", Path.Combine(currentDirectory, name, "food.txt"));
+                    Console.WriteLine("Downloaded: food.txt");
+                    await firebaseStorage.DownloadFileAsync(sourcePath + "stats.txt", Path.Combine(currentDirectory, name, "stats.txt"));
+                    Console.WriteLine("Downloaded: stats.txt");
+
+                    Console.WriteLine("All files downloaded successfully!");
                 }
                 catch (Exception ex)
                 {
                     // Handle exceptions
-                    Console.WriteLine("Error downloading folder: " + ex.Message);
+                    Console.WriteLine("Error downloading files: " + ex.Message);
                 }
             });
         }
-
-
     }
 }

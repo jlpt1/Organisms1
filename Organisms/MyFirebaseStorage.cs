@@ -1,5 +1,6 @@
 ﻿using Firebase.Storage;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
@@ -40,7 +41,7 @@ namespace Organisms
             var storage = new FirebaseStorage(bucket);
             var task = storage.Child("files").Child(storagePath).GetDownloadUrlAsync();
             var url = await task;  // Gets the download URL
-
+            
             using (var httpClient = new System.Net.Http.HttpClient())
             {
                 var fileBytes = await httpClient.GetByteArrayAsync(url);
@@ -48,5 +49,9 @@ namespace Organisms
             }
             Debug.WriteLine($"File downloaded successfully to {localPath}");
         }
+
+      
+
+
     }
 }

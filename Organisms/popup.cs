@@ -115,7 +115,7 @@ public class InputPopup
             if (command == "/downloadenv")
             {
                 string parameter = parts.Length > 1 ? parts[1] : null;
-                env.downloadEnv(parameter);
+                env.downloadEnvironment(parameter);
             }
             if (command == "/upload")
             {
