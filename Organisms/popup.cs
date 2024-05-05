@@ -28,7 +28,7 @@ public class InputPopup
         {
             // Submit the input
             isActive = false;
-            string[] parts = inputText.Trim().ToLower().Split(new char[] { ' ' }, 2);
+            string[] parts = inputText.Trim().ToLower().Split(new char[] { ' ' }, 5);
             string command = parts[0]; 
             if (command == "/foodspawnrate")
             {
@@ -70,6 +70,35 @@ public class InputPopup
                     
                     }
                 }
+            }
+            if (command == "/save")
+            {
+                string parameter = parts.Length > 1 ? parts[1] : null;
+                if (int.TryParse(parameter, out int index))
+                {
+                    string name = parts.Length > 2 ? parts[2] : "neuralNetwork"; 
+                    env.neuralNetworks[index].SaveToFile(index, name);
+                }
+            }
+            if (command == "/saveenv")
+            {
+
+                string parameter = parts.Length > 1 ? parts[1] : null;
+                
+                env.
+            }
+            if (command == "/load")
+            {
+
+                string parameter = parts.Length > 1 ? parts[1] : null;
+                
+                    env.LoadFromFile(parameter);
+                
+            }
+
+            if (command == "/export")
+            {
+                env.export();
             }
             // Do something with inputText
         }

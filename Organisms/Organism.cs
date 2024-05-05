@@ -7,6 +7,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using SharpDX.Direct2D1.Effects;
+using System.IO;
+using Newtonsoft.Json;
+using System.Reflection;
+using System.Diagnostics;
 
 namespace Organisms
 {
@@ -475,5 +479,77 @@ namespace Organisms
         {
 
         }
+
+
+        public string SaveToFile(int index, string name, string folder = ".")
+        {
+            try
+            {
+                string fileName = name + ".txt"; // Adjust the file name as needed
+                string filePath;
+                if (folder == ".")
+                {
+                    string currentDirectory = AppDomain.CurrentDomain.BaseDirectory;
+                    filePath = Path.Combine(currentDirectory, fileName);
+                }
+                else
+                {
+                    string currentDirectory = AppDomain.CurrentDomain.BaseDirectory;
+                    string folderPath = Path.Combine(currentDirectory, folder);
+                    // Create the folder if it doesn't exist
+                    if (!Directory.Exists(folderPath))
+                    {
+                        Directory.CreateDirectory(folderPath);
+                    }
+                    filePath = Path.Combine(folderPath, fileName);
+                }
+
+                using (StreamWriter writer = new StreamWriter(filePath))
+                {
+                    // Write necessary information to the file
+                    writer.WriteLine($"maxlife={maxlife}");
+                    writer.WriteLine($"life={life}");
+                    writer.WriteLine($"foodEaten={foodEaten}");
+                    writer.WriteLine($"totalFood={totalFood}");
+                    writer.WriteLine($"x={x}");
+                    writer.WriteLine($"y={y}");
+                    writer.WriteLine($"count={count}");
+                    writer.WriteLine($"connectionCount={connectionCount}");
+                    writer.WriteLine($"closestFoodX={closestFoodX}");
+                    writer.WriteLine($"closestFoodY={closestFoodY}");
+                    writer.WriteLine($"color={color.R},{color.G},{color.B}");
+                    writer.WriteLine($"gen={gen}");
+
+                    // Write information about each neuron
+                    for (int i = 0; i < neurons.Length; i++)
+                    {
+                        writer.WriteLine($"neuron_{i}_type={neurons[i].type}");
+                        writer.WriteLine($"neuron_{i}_activation={neurons[i].activation}");
+                        writer.WriteLine($"neuron_{i}_positionX={neurons[i].Position.X}");
+                        writer.WriteLine($"neuron_{i}_positionY={neurons[i].Position.Y}");
+                        writer.WriteLine($"neuron_{i}_refactory={neurons[i].refactory}");
+                        // Write information about connections for each neuron
+                        for (int j = 0; j < neurons[i].connections.Count; j++)
+                        {
+                            writer.WriteLine($"neuron_{i}_connection_{j}_index={neurons[i].connections[j].index}");
+                            writer.WriteLine($"neuron_{i}_connection_{j}_weight={neurons[i].connections[j].weight}");
+                        }
+                    }
+                }
+
+                // Return the full path of the saved file
+                Debug.WriteLine($"File saved at: {filePath}");
+                return filePath;
+            }
+            catch (Exception ex)
+            {
+                // Log the error or display a message
+                Debug.WriteLine($"Error saving file: {ex.Message}");
+                Debug.WriteLine($"Error saving file StackTrace: {ex.StackTrace}");
+                return null;
+            }
+        }
+
+
     }
 }

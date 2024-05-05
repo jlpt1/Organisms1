@@ -4,6 +4,10 @@ using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
 using System;
 using System.Threading.Tasks;
+using System.IO;
+using System.Diagnostics;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Rebar;
+using System.Runtime.InteropServices;
 
 namespace Organisms
 {
@@ -13,7 +17,7 @@ namespace Organisms
         private SpriteBatch spriteBatch;
         public List<Food> food = new List<Food>();
         private MouseState previousMouseState;
-        public int totalfoodeaten = 0;
+        
         private Texture2D atlas;
         public List<Organism> neuralNetworks = new List<Organism>();
         //  public Neuron[] neurons;
@@ -30,7 +34,13 @@ namespace Organisms
         public int organismSpawnChance = 30;
         public int startNeurons = 15;
         public int startConnections = 150;
-        
+
+        //Starter statistics
+        int totalfoodeaten = 0;
+        int highestgen = 0;
+        int avgneuroncount = 0;
+        int highestneuroncount = 0;
+        int highestconncount = 0;
         /// <summary>
         /// Constructs the game
         /// </summary>
@@ -49,6 +59,35 @@ namespace Organisms
 
         }
 
+        public void export()
+        {
+            // Define the path where the CSV file will be saved
+            string filePath = "path/to/your/data.csv";
+
+            using (StreamWriter writer = new StreamWriter(filePath))
+            {
+                // Write CSV header
+                writer.WriteLine("Metric,Value");
+
+                // Write data
+                writer.WriteLine("Total food," + food.Count);
+                writer.WriteLine("Total food eaten," + totalfoodeaten);
+                writer.WriteLine("Total organisms," + neuralNetworks.Count);
+                writer.WriteLine("Average neuron count," + avgneuroncount);
+                writer.WriteLine("Highest neuron count," + highestneuroncount);
+                writer.WriteLine("Highest connection count," + highestconncount);
+                writer.WriteLine("Highest generation," + highestgen);
+            }
+        }
+
+        public void save(string folder)
+        {
+            foreach (Organism o in neuralNetworks)
+            {
+                int index = neuralNetworks.IndexOf(activeNetwork);
+                o.SaveToFile(index, "organism" + index, folder);
+            }
+        }
         /// <summary>
         /// Initializes the game
         /// </summary>
@@ -393,6 +432,7 @@ namespace Organisms
             neuralNetworks.AddRange(newNetworks);
             if (activeNetwork != null)
             {
+                spriteBatch.DrawString(bangersSmall, neuralNetworks.IndexOf(activeNetwork).ToString(), new Vector2(activeNetwork.x, activeNetwork.y) - new Vector2(0, 200), Color.Red);
                 spriteBatch.DrawString(bangersSmall, activeNetwork.gen.ToString(), new Vector2(activeNetwork.x, activeNetwork.y) - new Vector2(0, 80), Color.Red);
                 spriteBatch.DrawString(bangersSmall, activeNetwork.neurons.Length.ToString(), new Vector2(activeNetwork.x, activeNetwork.y) - new Vector2(0, 36), Color.White);
                 spriteBatch.DrawString(bangersSmall, activeNetwork.connectionCount.ToString(), new Vector2(activeNetwork.x, activeNetwork.y) - new Vector2(0, 52), Color.White);
@@ -482,6 +522,166 @@ namespace Organisms
 
             base.Draw(gameTime);
         }
-    
+
+        public void LoadFromFile(string fileName)
+        {
+            try
+            {
+
+                string directory = AppDomain.CurrentDomain.BaseDirectory;
+
+                // Combine the directory and the file name to get the full file path
+                string filePath = Path.Combine(directory, fileName) + ".txt";
+                // Create a new instance of Organism
+                Organism organism = new Organism(null); // Pass null for squareTexture for now
+                Connection c = new Connection();
+
+                Neuron n = new Neuron(null, organism, 0, Type.Normal, r.Next(5, 30));
+                using (StreamReader reader = new StreamReader(filePath))
+                {
+                    string line;
+                    while ((line = reader.ReadLine()) != null)
+                    {
+                        string[] parts = line.Split('=');
+                        if (parts.Length == 2)
+                        {
+                            string key = parts[0].Trim();
+                            string value = parts[1].Trim();
+
+                            switch (key)
+                            {
+                                case "maxlife":
+                                    organism.maxlife = int.Parse(value);
+                                    break;
+                                case "life":
+                                    organism.life = int.Parse(value);
+                                    break;
+                                case "foodEaten":
+                                    organism.foodEaten = int.Parse(value);
+                                    break;
+                                case "totalFood":
+                                    organism.totalFood = int.Parse(value);
+                                    break;
+                                case "x":
+                                    organism.x = float.Parse(value);
+                                    break;
+                                case "y":
+                                    organism.y = float.Parse(value);
+                                    break;
+                                case "count":
+                                    organism.count = int.Parse(value);
+                                    break;
+                                case "connectionCount":
+                                    organism.connectionCount = int.Parse(value);
+                                    break;
+                                case "closestFoodX":
+                                    organism.closestFoodX = float.Parse(value);
+                                    break;
+                                case "closestFoodY":
+                                    organism.closestFoodY = float.Parse(value);
+                                    break;
+                                case "color":
+                                    string[] colorValues = value.Split(',');
+                                    organism.color = new Color(int.Parse(colorValues[0]), int.Parse(colorValues[1]), int.Parse(colorValues[2]));
+                                    break;
+                                case "gen":
+                                    organism.gen = int.Parse(value);
+                                    break;
+                                default:
+                                    // Check if the key corresponds to neuron or connection information
+                                    if (key.StartsWith("neuron_"))
+                                    {
+                                        // Extract neuron index and property
+                                        string[] neuronInfo = key.Split('_');
+                                        int neuronIndex = int.Parse(neuronInfo[1]);
+                                        string property = neuronInfo[2];
+
+                                        
+
+                                        if (property == "type")
+                                        {
+                                            if (organism.neurons == null)
+                                            {
+                                                // Determine the length of the neurons array
+                                                int neuronCount = organism.count; // Assuming neuron indices are consecutive starting from 0
+                                                organism.neurons = new Neuron[neuronCount];
+                                            }
+                                            Type neuronType = (Type)Enum.Parse(typeof(Type), value);
+                                            // Create a new Neuron with the loaded type
+
+                                            organism.neurons[neuronIndex] = new Neuron(null, organism, neuronIndex, neuronType, r.Next(5, 30));
+                                            
+                                        }
+                                        if (property == "activation")
+                                        {
+
+
+                                            organism.neurons[neuronIndex].activation = float.Parse(value);
+
+                                        }
+                                        if (property == "positionX")
+                                        {
+
+
+                                            organism.neurons[neuronIndex].Position.X = float.Parse(value);
+
+                                        }
+
+                                        if (property == "positionY")
+                                        {
+
+
+                                            organism.neurons[neuronIndex].Position.Y = float.Parse(value);
+
+                                        }
+                                        if (property == "refactory")
+                                        {
+
+
+                                            organism.neurons[neuronIndex].refactory = int.Parse(value);
+
+                                        }
+
+                                        else if (property.StartsWith("connection"))
+                                        {
+                                          
+                                            // Extract connection index and property
+                                            string[] connectionInfo = property.Split('_');
+                                            int connectionIndex = int.Parse(neuronInfo[3]);//int.Parse(connectionInfo[2]);
+                                            string connectionProperty = neuronInfo[4]; //connectionInfo[3];
+
+                                            if (connectionProperty == "index")
+                                            {
+                                                c.index = int.Parse(value);
+                                              
+                                            }
+                                            else if (connectionProperty == "weight")
+                                            {
+                                                float weightValue = float.Parse(value);
+                                                // Retrieve the Connection object using the connectionIndex
+                                                c.weight = weightValue;
+
+                                                organism.neurons[neuronIndex].connections.Add(c);
+                                             
+                                            }
+                                        }
+                                    }
+                                    break;
+                            }
+                        }
+                    }
+                }
+
+                neuralNetworks.Add(organism);
+            }
+            catch (Exception ex)
+            {
+                // Log the error or display a message
+                Debug.WriteLine($"Error loading file: {ex.Message}");
+                Debug.WriteLine($"Error loading file StackTrace: {ex.StackTrace}");
+              
+            }
+        }
+
     }
 }

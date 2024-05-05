@@ -40,7 +40,7 @@ namespace Organisms
     {
         private Texture2D texture;
         public Neuron[] neurons;
-        private Organism organism;
+        public Organism organism;
         public Texture2D pixelTexture;
         public List<Connection> connections = new List<Connection>();
         public Type type;
@@ -68,6 +68,12 @@ namespace Organisms
             int temp = r.Next(30);
             this.refactory = refactory;
             timer = 0;// r.Next(temp);
+            // neurons[0] = null;
+        }
+
+        public Neuron()
+        {
+          
             // neurons[0] = null;
         }
 
