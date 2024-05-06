@@ -47,7 +47,7 @@ namespace Organisms
         private KeyboardState currentKeyboardState;
         private KeyboardState previousKeyboardState;
         public int foodChances = 100;
-        public int organismSpawnChance = 0;
+        public int organismSpawnChance = 30;
         public int startNeurons = 15;
         public int startConnections = 150;
 
@@ -600,10 +600,10 @@ namespace Organisms
             neuralNetworks.AddRange(newNetworks);
             if (activeNetwork != null)
             {
-                spriteBatch.DrawString(bangersSmall, neuralNetworks.IndexOf(activeNetwork).ToString(), new Vector2(activeNetwork.x, activeNetwork.y) - new Vector2(0, 200), Color.Red);
-                spriteBatch.DrawString(bangersSmall, activeNetwork.gen.ToString(), new Vector2(activeNetwork.x, activeNetwork.y) - new Vector2(0, 80), Color.Red);
-                spriteBatch.DrawString(bangersSmall, activeNetwork.neurons.Length.ToString(), new Vector2(activeNetwork.x, activeNetwork.y) - new Vector2(0, 36), Color.White);
-                spriteBatch.DrawString(bangersSmall, activeNetwork.connectionCount.ToString(), new Vector2(activeNetwork.x, activeNetwork.y) - new Vector2(0, 52), Color.White);
+                spriteBatch.DrawString(bangersSmall, "Index: "+neuralNetworks.IndexOf(activeNetwork).ToString(), new Vector2(activeNetwork.x, activeNetwork.y) - new Vector2(0, 126), Color.Cyan);
+                spriteBatch.DrawString(bangersSmall, "Gen: "+activeNetwork.gen.ToString(), new Vector2(activeNetwork.x, activeNetwork.y) - new Vector2(0, 96), Color.Red);
+                spriteBatch.DrawString(bangersSmall, "Neurons: "+activeNetwork.neurons.Length.ToString(), new Vector2(activeNetwork.x, activeNetwork.y) - new Vector2(0, 36), Color.White);
+                spriteBatch.DrawString(bangersSmall, "Connections: "+activeNetwork.connectionCount.ToString(), new Vector2(activeNetwork.x, activeNetwork.y) - new Vector2(0, 66), Color.White);
                 foreach (var neuron in activeNetwork.neurons)
                 {
                     foreach (Connection c in neuron.connections)
@@ -679,12 +679,12 @@ namespace Organisms
             }
           
             spriteBatch.DrawString(bangersSmall, "Total food: " + food.Count, new Vector2(0, 60), Color.Red);
-            spriteBatch.DrawString(bangersSmall, "Total food eaten: "+ totalfoodeaten, new Vector2(0, 80), Color.Red);
-            spriteBatch.DrawString(bangersSmall, "Total organisms: " + neuralNetworks.Count, new Vector2(0, 100), Color.Red);
-            spriteBatch.DrawString(bangersSmall, "Average neuron count: " + avgneuroncount, new Vector2(0, 120), Color.Red);
-            spriteBatch.DrawString(bangersSmall, "highest neuron count: " + highestneuroncount, new Vector2(0, 140), Color.Red);
-            spriteBatch.DrawString(bangersSmall, "highest connection count: " + highestconncount, new Vector2(0, 160), Color.Red);
-            spriteBatch.DrawString(bangersSmall, "highest generation: " + highestgen, new Vector2(0, 180), Color.Red);
+            spriteBatch.DrawString(bangersSmall, "Total food eaten: "+ totalfoodeaten, new Vector2(0, 90), Color.Red);
+            spriteBatch.DrawString(bangersSmall, "Total organisms: " + neuralNetworks.Count, new Vector2(0, 120), Color.Red);
+            spriteBatch.DrawString(bangersSmall, "Average neuron count: " + avgneuroncount, new Vector2(0, 150), Color.Red);
+            spriteBatch.DrawString(bangersSmall, "highest neuron count: " + highestneuroncount, new Vector2(0, 180), Color.Red);
+            spriteBatch.DrawString(bangersSmall, "highest connection count: " + highestconncount, new Vector2(0, 210), Color.Red);
+            spriteBatch.DrawString(bangersSmall, "highest generation: " + highestgen, new Vector2(0, 240), Color.Red);
             inputPopup.Draw(spriteBatch);
             spriteBatch.End();
 

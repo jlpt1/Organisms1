@@ -32,7 +32,7 @@ namespace Organisms
         
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            Color col = new Color(255, 0, 0);
+            Color col = new Color(0, 255, 255);
             Vector2 origin = new Vector2(pixelTexture.Width / 2, pixelTexture.Height / 2);
             spriteBatch.Draw(pixelTexture, new Vector2(x,y), null, col, 0f, origin, .045f, SpriteEffects.None, 0f);
         }
