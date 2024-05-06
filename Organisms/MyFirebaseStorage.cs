@@ -21,16 +21,13 @@ namespace Organisms
         {
             Debug.WriteLine("Starting file upload...");
 
-            // Create a FirebaseStorage instance using the default app credentials
             var storage = new FirebaseStorage(bucket);
 
-            // Upload the file
             var task = storage.Child("files").Child(destinationPath).PutAsync(File.OpenRead(localPath));
 
-            // Track progress of the upload
             task.Progress.ProgressChanged += (s, e) => Debug.WriteLine($"Progress: {e.Percentage} %");
 
-            // Await the task to get the download URL
+         
             var downloadUrl = await task;
 
             Debug.WriteLine($"File uploaded successfully: {downloadUrl}");
@@ -40,7 +37,7 @@ namespace Organisms
             Debug.WriteLine("Starting file download...");
             var storage = new FirebaseStorage(bucket);
             var task = storage.Child("files").Child(storagePath).GetDownloadUrlAsync();
-            var url = await task;  // Gets the download URL
+            var url = await task;  
             
             using (var httpClient = new System.Net.Http.HttpClient())
             {
