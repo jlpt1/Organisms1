@@ -33,7 +33,8 @@ namespace Organisms
         private SpriteBatch spriteBatch;
         public List<Food> food = new List<Food>();
         private MouseState previousMouseState;
-        
+        public Slider frameRateSlider;
+        private Texture2D sliderTexture;
         private Texture2D atlas;
         public List<Organism> neuralNetworks = new List<Organism>();
         //  public Neuron[] neurons;
@@ -50,7 +51,9 @@ namespace Organisms
         public int organismSpawnChance = 30;
         public int startNeurons = 15;
         public int startConnections = 150;
-
+        private double frameRate;
+        private double timeSinceLastUpdate = 0;
+        private int frameCounter = 0;
         //Starter statistics
         int totalfoodeaten = 0;
         int highestgen = 0;
@@ -264,7 +267,10 @@ namespace Organisms
             
             // TODO: Add your initialization logic here
             squareTexture = new Texture2D(GraphicsDevice, 1, 1);
+
+            sliderTexture = Content.Load<Texture2D>("neuron1");
             squareTexture.SetData(new Color[] { Color.White });
+            frameRateSlider = new Slider(this, sliderTexture, new Rectangle(1200, 10, 400, 40), 30, 600, 60);
             for (int i = 0; i < 0; i++)
             {
                 Organism network = new Organism(squareTexture, startNeurons, startConnections);
@@ -344,7 +350,16 @@ namespace Organisms
         /// <param name="gameTime">the measured game time</param>
         protected override void Update(GameTime gameTime)
         {
-
+            frameRateSlider.Update();
+            TargetElapsedTime = TimeSpan.FromMilliseconds(1000.0 / frameRateSlider.CurrentValue);
+            frameCounter++;
+            timeSinceLastUpdate += gameTime.ElapsedGameTime.TotalSeconds;
+            if (timeSinceLastUpdate >= 1.0)
+            {
+                frameRate = frameCounter / timeSinceLastUpdate;
+                frameCounter = 0;
+                timeSinceLastUpdate -= 1.0;
+            }
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
             inputPopup.Update();
@@ -580,7 +595,7 @@ namespace Organisms
             GraphicsDevice.Clear(Color.Black);
 
             spriteBatch.Begin();
-           
+            
             Vector2 origin = new Vector2(texture.Width / 2, texture.Height / 2);
             List<Organism> newNetworks = new List<Organism>();
 
@@ -685,7 +700,11 @@ namespace Organisms
             spriteBatch.DrawString(bangersSmall, "highest neuron count: " + highestneuroncount, new Vector2(0, 180), Color.Red);
             spriteBatch.DrawString(bangersSmall, "highest connection count: " + highestconncount, new Vector2(0, 210), Color.Red);
             spriteBatch.DrawString(bangersSmall, "highest generation: " + highestgen, new Vector2(0, 240), Color.Red);
+
             inputPopup.Draw(spriteBatch);
+            frameRateSlider.Draw(spriteBatch);
+            string fpsText = $"FPS: {frameRate:0.00}";
+            spriteBatch.DrawString(bangersSmall, fpsText, new Vector2(0, 0), Color.White);
             spriteBatch.End();
 
             base.Draw(gameTime);

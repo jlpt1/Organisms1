@@ -56,6 +56,7 @@ public class InputPopup
                 if (int.TryParse(parameter, out int framerate))
                 {
                     env.TargetElapsedTime = TimeSpan.FromMilliseconds(1000.0 / framerate);
+                    env.frameRateSlider.MaxValue = framerate;
                 }
             }
             if (command == "/organismlife")
