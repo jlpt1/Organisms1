@@ -57,6 +57,7 @@ public class InputPopup
                 {
                     env.TargetElapsedTime = TimeSpan.FromMilliseconds(1000.0 / framerate);
                     env.frameRateSlider.MaxValue = framerate;
+                    env.frameRateSlider.CurrentValue = framerate;
                 }
             }
             if (command == "/organismlife")
@@ -68,8 +69,28 @@ public class InputPopup
                     foreach (var organism in env.neuralNetworks)
                     {
                         organism.maxlife = life;
+
                     
                     }
+                    env.maxlife = life;
+                }
+            }
+            if (command == "/maxfood")
+            {
+
+                string parameter = parts.Length > 1 ? parts[1] : null;
+                if (int.TryParse(parameter, out int max))
+                {
+                    env.maxfood = max;
+                }
+            }
+            if (command == "/maxorganisms")
+            {
+
+                string parameter = parts.Length > 1 ? parts[1] : null;
+                if (int.TryParse(parameter, out int max))
+                {
+                    env.maxOrganisms = max;
                 }
             }
             if (command == "/save")
@@ -127,6 +148,24 @@ public class InputPopup
             {
                 string parameter = parts.Length > 1 ? parts[1] : null;
                 env.downloadOrganism(parameter);
+            }
+            if (command == "/create")
+            {
+                string parameter = parts.Length > 1 ? parts[1] : null;
+                if (int.TryParse(parameter, out int numOrganisms))
+                {
+                    string parameter2 = parts.Length > 2 ? parts[2] : "neuralNetwork";
+                    if (int.TryParse(parameter2, out int numFood))
+                        env.create(numOrganisms, numFood);
+                }
+            }
+            if (command == "/pause")
+            {
+                env.paused = true;
+            }
+            if (command == "/unpause")
+            {
+                env.paused = false;
             }
             // Do something with inputText
         }

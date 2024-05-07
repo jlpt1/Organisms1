@@ -49,11 +49,16 @@ namespace Organisms
         private KeyboardState previousKeyboardState;
         public int foodChances = 100;
         public int organismSpawnChance = 30;
+        public int maxfood = 500;
+        public int maxlife = 6000;
+        public int maxOrganisms = 30;
         public int startNeurons = 15;
         public int startConnections = 150;
         private double frameRate;
         private double timeSinceLastUpdate = 0;
         private int frameCounter = 0;
+        private bool created = false;
+        public bool paused = false;
         //Starter statistics
         int totalfoodeaten = 0;
         int highestgen = 0;
@@ -82,7 +87,27 @@ namespace Organisms
         }
         
             
- 
+        public void create(int numOrganisms, int numFood)
+        {
+            neuralNetworks.Clear();
+            food.Clear();
+            for (int i = 0; i < numOrganisms; i++)
+            {
+                Organism network = new Organism(squareTexture, startNeurons, startConnections);
+
+                network.gen = 0;
+                neuralNetworks.Add(network);
+            }
+           
+
+            Random r = new Random();
+            for (int i = 0; i < numFood; i++)
+            {
+                Food f = new Food(texture, r.Next(240, 1660), r.Next(140, 860));
+                food.Add(f);
+            }
+            created = true;
+        }
         public void export(string name)
         {
             
@@ -267,21 +292,14 @@ namespace Organisms
             
             // TODO: Add your initialization logic here
             squareTexture = new Texture2D(GraphicsDevice, 1, 1);
-
+            texture = Content.Load<Texture2D>("neuron1");
             sliderTexture = Content.Load<Texture2D>("neuron1");
             squareTexture.SetData(new Color[] { Color.White });
             frameRateSlider = new Slider(this, sliderTexture, new Rectangle(1200, 10, 400, 40), 30, 600, 60);
-            for (int i = 0; i < 0; i++)
-            {
-                Organism network = new Organism(squareTexture, startNeurons, startConnections);
-
-                network.gen = 0;
-                neuralNetworks.Add(network);
-            }
-
-           
-           
             
+
+
+
             /* int numNeurons = 200;
              neurons = new Neuron[numNeurons];
              Random r = new Random();
@@ -323,20 +341,13 @@ namespace Organisms
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
-            texture = Content.Load<Texture2D>("neuron1");
-           
-           
+            
             foreach (var nn in neuralNetworks)
             {
                
                 foreach (var neuron in nn.neurons) neuron.LoadContent(Content);
             }
-            Random r = new Random();
-            for (int i = 0; i < 100; i++)
-            {
-                Food f = new Food(texture, r.Next(240, 1660), r.Next(140, 860));
-                food.Add(f);
-            }
+            
 
             bangers = Content.Load<SpriteFont>("bangers");
             bangersSmall = Content.Load<SpriteFont>("bangers2");
@@ -363,46 +374,49 @@ namespace Organisms
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
             inputPopup.Update();
-            if (r.Next(0, 10000) < foodChances && food.Count < 500)
+            if (!paused)
             {
-                Food f = new Food(texture, r.Next(240, 1660), r.Next(140, 860));
-                food.Add(f);
-            }
-            if (r.Next(0, 10000) < organismSpawnChance)
-            {
-                Organism network = new Organism(squareTexture, startNeurons, startConnections);
-                network.gen = 0;
-                neuralNetworks.Add(network);
-            }
-            foreach (var nn in neuralNetworks)
-            {
-               
-                if (nn.x >= 1700)
+                if (r.Next(0, 10000) < foodChances && food.Count < maxfood && created)
                 {
-                    nn.x = 1700;
+                    Food f = new Food(texture, r.Next(240, 1660), r.Next(140, 860));
+                    food.Add(f);
                 }
-                if (nn.x < 160)
+                if (r.Next(0, 10000) < organismSpawnChance && neuralNetworks.Count < maxOrganisms && created)
                 {
-                    nn.x = 160;
+                    Organism network = new Organism(squareTexture, startNeurons, startConnections);
+                    network.gen = 0;
+                    neuralNetworks.Add(network);
                 }
-                if (nn.y >= 900)
+                foreach (var nn in neuralNetworks)
                 {
-                    nn.y = 900;
-                }
-                if (nn.y < 80)
-                {
-                    nn.y = 80;
+
+                    if (nn.x >= 1700)
+                    {
+                        nn.x = 1700;
+                    }
+                    if (nn.x < 160)
+                    {
+                        nn.x = 160;
+                    }
+                    if (nn.y >= 900)
+                    {
+                        nn.y = 900;
+                    }
+                    if (nn.y < 80)
+                    {
+                        nn.y = 80;
+                    }
+
                 }
 
-            }
-
-            for (int i = neuralNetworks.Count - 1; i >= 0; i--)
-            {
-                var nn = neuralNetworks[i];
-                totalfoodeaten += nn.CheckForFoodCollision(food);
-                if (nn.life <= 0)
+                for (int i = neuralNetworks.Count - 1; i >= 0; i--)
                 {
-                    neuralNetworks.RemoveAt(i);
+                    var nn = neuralNetworks[i];
+                    totalfoodeaten += nn.CheckForFoodCollision(food);
+                    if (nn.life <= 0)
+                    {
+                        neuralNetworks.RemoveAt(i);
+                    }
                 }
             }
 
@@ -561,11 +575,14 @@ namespace Organisms
             }*/
 
             previousMouseState = currentMouseState;
-            Parallel.ForEach(neuralNetworks, nn =>
+            if (!paused)
             {
-           
-                nn.Update(gameTime);
-            });
+                Parallel.ForEach(neuralNetworks, nn =>
+                {
+
+                    nn.Update(gameTime);
+                });
+            }
             //foreach (var bat in neurons) bat.Update(gameTime);
             base.Update(gameTime);
         }
@@ -700,6 +717,16 @@ namespace Organisms
             spriteBatch.DrawString(bangersSmall, "highest neuron count: " + highestneuroncount, new Vector2(0, 180), Color.Red);
             spriteBatch.DrawString(bangersSmall, "highest connection count: " + highestconncount, new Vector2(0, 210), Color.Red);
             spriteBatch.DrawString(bangersSmall, "highest generation: " + highestgen, new Vector2(0, 240), Color.Red);
+
+
+
+            spriteBatch.DrawString(bangersSmall, "Organism limit: " + organismSpawnChance, new Vector2(0, 800), Color.Red);
+            spriteBatch.DrawString(bangersSmall, "Food limit: " + maxOrganisms, new Vector2(0, 830), Color.Red);
+            spriteBatch.DrawString(bangersSmall, "Organism Max Life: " + maxlife, new Vector2(0, 860), Color.Red);
+            spriteBatch.DrawString(bangersSmall, "Food spawn rate: " + foodChances, new Vector2(0, 890), Color.Red);
+            spriteBatch.DrawString(bangersSmall, "Organism spawn rate: " + maxfood, new Vector2(0, 920), Color.Red);
+            spriteBatch.DrawString(bangersSmall, "Framerate: " + (1 / TargetElapsedTime.TotalSeconds).ToString("0.00") + " FPS", new Vector2(0, 950), Color.Red);
+
 
             inputPopup.Draw(spriteBatch);
             frameRateSlider.Draw(spriteBatch);
